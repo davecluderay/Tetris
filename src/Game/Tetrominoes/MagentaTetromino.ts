@@ -1,4 +1,4 @@
-import { BrickColour } from "../TetrisPlayArea";
+import { BrickColour } from "../SharedTypes";
 import { Tetromino } from "./Tetromino";
 
 export class MagentaTetromino extends Tetromino {
@@ -11,4 +11,4 @@ export class MagentaTetromino extends Tetromino {
                 [0, 0, 0]
             ]);
      }
-}
+};

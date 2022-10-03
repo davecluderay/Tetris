@@ -1,4 +1,4 @@
-import { BrickColour, Position } from "../TetrisPlayArea";
+import { BrickColour, Position } from "../SharedTypes";
 
 export abstract class Tetromino {
     position: [x: number, y: number];
@@ -58,4 +58,4 @@ export abstract class Tetromino {
         }
         return result;
     }
-}
+};

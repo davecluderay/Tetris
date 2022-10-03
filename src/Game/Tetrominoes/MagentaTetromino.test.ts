@@ -1,6 +1,6 @@
 import { MagentaTetromino } from "./MagentaTetromino";
 
-type RotationTestCase = { times: number, expectedLayout: number[][] }
+type RotationTestCase = { times: number, expectedLayout: number[][] };
 
 test('can create tetromino', () => {
     const tetromino = new MagentaTetromino();

@@ -1,4 +1,4 @@
-import { BrickColour } from "../TetrisPlayArea";
+import { BrickColour } from "../SharedTypes";
 import { Tetromino } from "./Tetromino";
 
 export class YellowTetromino extends Tetromino {

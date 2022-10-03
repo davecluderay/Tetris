@@ -1,15 +1,16 @@
 import { Tetromino, TetrominoProducer, produceRandomTetromino } from "./Tetrominoes";
-import { Position, TetrisPlayArea } from "./TetrisPlayArea";
+import { PlayArea } from "./PlayArea";
+import { Position } from "./SharedTypes";
 
 export class TetrisGame {
     private produceTetromino: TetrominoProducer;
     next: Tetromino;
     active: Tetromino;
-    playArea: TetrisPlayArea;
+    playArea: PlayArea;
 
     constructor(produceTetromino?: TetrominoProducer) {
         this.produceTetromino = produceTetromino ?? produceRandomTetromino;
-        this.playArea = new TetrisPlayArea();
+        this.playArea = new PlayArea();
         this.next = this.produceTetromino();
         this.active = this.produceTetromino();
         this.setInitialPosition(this.active);
@@ -17,7 +18,7 @@ export class TetrisGame {
 
     public tick() {
         if (!this.moveActiveTetromino(0, -1)) {
-            this.fixActiveTetromino();
+            this.lockActiveTetromino();
         }
     }
 
@@ -47,7 +48,7 @@ export class TetrisGame {
         return false;
     }
 
-    private fixActiveTetromino() {
+    private lockActiveTetromino() {
         const tetromino = this.active;
         const [atX, atY] = tetromino.position;
         for (let layoutY = 0; layoutY < tetromino.layoutSize; layoutY++) {

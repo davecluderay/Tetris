@@ -9,7 +9,7 @@ import { YellowTetromino } from "./YellowTetromino";
 
 export interface TetrominoProducer {
     (): Tetromino
-}
+};
 
 const produceRandomTetromino: TetrominoProducer = () => {
     const activators = [
@@ -23,6 +23,6 @@ const produceRandomTetromino: TetrominoProducer = () => {
     ];
     const index = Math.floor(Math.random() * activators.length);
     return new activators[index]();
-}
+};
 
 export { produceRandomTetromino };

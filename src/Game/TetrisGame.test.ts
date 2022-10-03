@@ -1,6 +1,6 @@
 import { TetrisGame } from "./TetrisGame";
-import { BlueTetromino, CyanTetromino, GreenTetromino, MagentaTetromino, OrangeTetromino, RedTetromino, Tetromino, Position, TetrominoProducer, YellowTetromino } from "./Tetrominoes";
-import { BrickColour } from "./TetrisPlayArea";
+import { BlueTetromino, CyanTetromino, GreenTetromino, MagentaTetromino, OrangeTetromino, RedTetromino, Tetromino, TetrominoProducer, YellowTetromino } from "./Tetrominoes";
+import { BrickColour, Position } from "./SharedTypes";
 
 type MovementOperation = "left" | "right" | "down";
 type InitialPositionTestCase = { producer: TetrominoProducer, expectedPosition: Position };
@@ -50,7 +50,7 @@ test('active tetromino descends when not obstructed', () => {
     expect(game.active.position).toEqual([x, y - 1]);
 });
 
-test('active tetromino becomes fixed at base of play area', () => {
+test('active tetromino becomes locked at base of play area', () => {
     const game = new TetrisGame();
     let tetromino = game.active;
     let [x, _] = tetromino.position;
@@ -64,7 +64,7 @@ test.each([
     { producer: () => new GreenTetromino(), tetrominoAt: [2, 12], obstructedAt: [4, 11] },
     { producer: () => new RedTetromino(), tetrominoAt: [2, 12], obstructedAt: [2, 11] },
     { producer: () => new RedTetromino(), tetrominoAt: [2, 12], obstructedAt: [4, 10] },
-] as ObstructedFromBelowTestCase[])('active tetromino becomes fixed when obstructed from below', ({ producer, tetrominoAt, obstructedAt }) => {
+] as ObstructedFromBelowTestCase[])('active tetromino becomes locked when obstructed from below', ({ producer, tetrominoAt, obstructedAt }) => {
     const game = new TetrisGame(producer);
     const tetromino = game.active;
     tetromino.position = tetrominoAt;
