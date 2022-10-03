@@ -9,7 +9,7 @@ export enum BrickColour {
     Cyan = "#33ccff"
 }
 
-export type TetrominoPosition = [x: number, y: number];
+export type Position = [x: number, y: number];
 
 export abstract class Tetromino {
     position: [x: number, y: number];
@@ -18,7 +18,7 @@ export abstract class Tetromino {
     layout: number[][];
     layoutSize: number;
 
-    protected constructor(colour: BrickColour, layout: number[][], rotation: number = 0, position: TetrominoPosition = [0, 0]) {
+    protected constructor(colour: BrickColour, layout: number[][], rotation: number = 0, position: Position = [0, 0]) {
         this.position = position;
         this.rotation = rotation;
         this.colour = colour;

@@ -1,5 +1,5 @@
 import { Tetromino, TetrominoProducer, produceRandomTetromino } from "./Tetrominoes";
-import { BrickColour, TetrominoPosition } from "./Tetrominoes/Tetromino";
+import { BrickColour, Position } from "./Tetrominoes/Tetromino";
 
 const playAreaWidth = 10;
 const playAreaHeight = 20;
@@ -24,13 +24,25 @@ export class TetrisGame {
         }
     }
 
+    public left() {
+        this.moveActiveTetromino(-1, 0);
+    }
+
+    public right() {
+        this.moveActiveTetromino(1, 0);
+    }
+
+    public down() {
+        this.moveActiveTetromino(0, -1);
+    }
+
     private setInitialPosition(tetromino: Tetromino) {
         tetromino.position = [Math.floor((playAreaWidth - tetromino.layoutSize) / 2) - 1, playAreaHeight + 1];
     }
 
     private moveActiveTetromino(dx: number, dy: number) : boolean {
         const [x, y] = this.active.position;
-        const to: TetrominoPosition = [x + dx, y + dy];
+        const to: Position = [x + dx, y + dy];
         if (this.canPlace(this.active, [x + dx, y + dy])) {
             this.active.position = to;
             return true;
@@ -56,7 +68,7 @@ export class TetrisGame {
         this.next = this.produceTetromino();
     }
 
-    private canPlace(tetromino: Tetromino, at: TetrominoPosition): boolean {
+    private canPlace(tetromino: Tetromino, at: Position): boolean {
         const layout = tetromino.layout;
         const [atX, atY] = at;
         for (let layoutY = 0; layoutY < tetromino.layoutSize; layoutY++) {

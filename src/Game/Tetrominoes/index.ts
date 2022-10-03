@@ -1,4 +1,4 @@
-import { Tetromino, TetrominoPosition } from "./Tetromino";
+import { Tetromino, Position } from "./Tetromino";
 import { produceRandomTetromino, TetrominoProducer } from "./TetrominoProducer";
 import { BlueTetromino } from "./BlueTetromino";
 import { CyanTetromino } from "./CyanTetromino";
@@ -20,4 +20,4 @@ export {
     YellowTetromino
 };
 
-export type { TetrominoProducer, TetrominoPosition };
+export type { TetrominoProducer, Position };
