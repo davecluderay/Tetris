@@ -1,6 +1,6 @@
 import { TetrisGame } from "./TetrisGame";
 import { BlueTetromino, CyanTetromino, GreenTetromino, MagentaTetromino, OrangeTetromino, RedTetromino, Tetromino, Position, TetrominoProducer, YellowTetromino } from "./Tetrominoes";
-import { BrickColour } from "./Tetrominoes/Tetromino";
+import { BrickColour } from "./TetrisPlayArea";
 
 type MovementOperation = "left" | "right" | "down";
 type InitialPositionTestCase = { producer: TetrominoProducer, expectedPosition: Position };
@@ -25,8 +25,9 @@ test('new game has next block', () => {
 
 test('new game has play area defined', () => {
     const game = new TetrisGame();
-    expect(game.playArea).toHaveLength(20);
-    expect(game.playArea[0]).toHaveLength(10);
+    expect(game.playArea).toBeDefined();
+    expect(game.playArea.visibleHeight).toBe(20);
+    expect(game.playArea.width).toBe(10);
 });
 
 test.each([
@@ -67,7 +68,7 @@ test.each([
     const game = new TetrisGame(producer);
     const tetromino = game.active;
     tetromino.position = tetrominoAt;
-    game.playArea[obstructedAt[1]][obstructedAt[0]] = BrickColour.Blue;
+    game.playArea.setBrickAt(obstructedAt, BrickColour.Blue);
     game.tick();
     expect(game.active).not.toEqual(tetromino);
 });
@@ -95,7 +96,7 @@ test.each([
     const tetromino = game.active;
     tetromino.position = tetrominoAt;
     if (obstructedAt) {
-        game.playArea[obstructedAt[1]][obstructedAt[0]] = BrickColour.Blue;
+        game.playArea.setBrickAt(obstructedAt, BrickColour.Blue);
     }
     game[operation]();
     expect(game.active.position).toEqual(tetrominoAt);

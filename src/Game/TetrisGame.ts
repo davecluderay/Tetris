@@ -1,18 +1,15 @@
 import { Tetromino, TetrominoProducer, produceRandomTetromino } from "./Tetrominoes";
-import { BrickColour, Position } from "./Tetrominoes/Tetromino";
-
-const playAreaWidth = 10;
-const playAreaHeight = 20;
+import { Position, TetrisPlayArea } from "./TetrisPlayArea";
 
 export class TetrisGame {
     private produceTetromino: TetrominoProducer;
     next: Tetromino;
     active: Tetromino;
-    playArea: Array<Array<BrickColour>>;
+    playArea: TetrisPlayArea;
 
     constructor(produceTetromino?: TetrominoProducer) {
         this.produceTetromino = produceTetromino ?? produceRandomTetromino;
-        this.playArea = Array.from(Array(playAreaHeight), () => Array(playAreaWidth).fill(null));
+        this.playArea = new TetrisPlayArea();
         this.next = this.produceTetromino();
         this.active = this.produceTetromino();
         this.setInitialPosition(this.active);
@@ -37,7 +34,7 @@ export class TetrisGame {
     }
 
     private setInitialPosition(tetromino: Tetromino) {
-        tetromino.position = [Math.floor((playAreaWidth - tetromino.layoutSize) / 2) - 1, playAreaHeight + 1];
+        tetromino.position = [Math.floor((this.playArea.width - tetromino.layoutSize) / 2) - 1, this.playArea.visibleHeight + 1];
     }
 
     private moveActiveTetromino(dx: number, dy: number) : boolean {
@@ -57,9 +54,8 @@ export class TetrisGame {
             for (let layoutX = 0; layoutX < tetromino.layoutSize; layoutX++) {
                 if (tetromino.layout[layoutY][layoutX] !== 1) continue;
                 const [x, y] = [atX + layoutX, atY - layoutY];
-                if (x < 0 || x >= playAreaWidth) continue;
-                if (y < 0 || y >= playAreaHeight) continue;
-                this.playArea[y][x] = tetromino.colour;
+                if (!this.playArea.contains([x, y])) continue;
+                this.playArea.setBrickAt([x, y], tetromino.colour);
             }
         }
 
@@ -75,10 +71,8 @@ export class TetrisGame {
             for (let x = 0; x < tetromino.layoutSize; x++) {
                 if (layout[layoutY][x] !== 1) continue;
                 const [testX, testY] = [atX + x, atY - layoutY];
-                if (testX < 0 || testX >= playAreaWidth) return false;
-                if (testY < 0) return false;
-                if (testY >= playAreaHeight) continue;
-                if (this.playArea[testY][testX] !== null) return false;
+                if (!this.playArea.contains([testX, testY])) return false;
+                if (this.playArea.hasBrickAt([testX, testY])) return false;
             }
         }
         return true;
