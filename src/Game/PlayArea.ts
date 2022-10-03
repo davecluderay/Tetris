@@ -1,8 +1,12 @@
 import { BrickColour, Position } from "./SharedTypes";
 
 export class PlayArea {
-    readonly width = 10;
-    readonly visibleHeight = 20;
+    static readonly width = 10;
+    static readonly visibleHeight = 20;
+
+    readonly width = PlayArea.width;
+    readonly visibleHeight = PlayArea.visibleHeight;
+
     private layout: Array<Array<BrickColour | null>>;
 
     constructor() {

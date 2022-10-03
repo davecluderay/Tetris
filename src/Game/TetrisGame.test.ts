@@ -1,6 +1,11 @@
 import { TetrisGame } from "./TetrisGame";
 import { BlueTetromino, CyanTetromino, GreenTetromino, MagentaTetromino, OrangeTetromino, RedTetromino, Tetromino, TetrominoProducer, YellowTetromino } from "./Tetrominoes";
 import { BrickColour, Position } from "./SharedTypes";
+import { PlayArea } from "./PlayArea";
+
+const areaWidth = PlayArea.width;
+const areaVisibleHeight = PlayArea.visibleHeight;
+const areaMidHeight = Math.floor(areaVisibleHeight / 2);
 
 type MovementOperation = "left" | "right" | "down";
 type InitialPositionTestCase = { producer: TetrominoProducer, expectedPosition: Position };
@@ -26,18 +31,18 @@ test('new game has next block', () => {
 test('new game has play area defined', () => {
     const game = new TetrisGame();
     expect(game.playArea).toBeDefined();
-    expect(game.playArea.visibleHeight).toBe(20);
-    expect(game.playArea.width).toBe(10);
+    expect(game.playArea.visibleHeight).toBe(areaVisibleHeight);
+    expect(game.playArea.width).toBe(areaWidth);
 });
 
 test.each([
-    { producer: () => new BlueTetromino(), expectedPosition: [2, 21] },
-    { producer: () => new CyanTetromino(), expectedPosition: [2, 21] },
-    { producer: () => new GreenTetromino(), expectedPosition: [2, 21] },
-    { producer: () => new MagentaTetromino(), expectedPosition: [2, 21] },
-    { producer: () => new OrangeTetromino(), expectedPosition: [2, 21] },
-    { producer: () => new RedTetromino(), expectedPosition: [2, 21] },
-    { producer: () => new YellowTetromino(), expectedPosition: [3, 21] }
+    { producer: () => new BlueTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
+    { producer: () => new CyanTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
+    { producer: () => new GreenTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
+    { producer: () => new MagentaTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
+    { producer: () => new OrangeTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
+    { producer: () => new RedTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
+    { producer: () => new YellowTetromino(), expectedPosition: [areaWidth / 2 - 2, areaVisibleHeight + 1] }
 ] as InitialPositionTestCase[])('initial tetromino position is central', ({ producer, expectedPosition }: InitialPositionTestCase) => {
     const game = new TetrisGame(producer);
     expect(game.active.position).toEqual(expectedPosition);
@@ -60,10 +65,10 @@ test('active tetromino becomes locked at base of play area', () => {
 });
 
 test.each([
-    { producer: () => new GreenTetromino(), tetrominoAt: [2, 12], obstructedAt: [2, 10] },
-    { producer: () => new GreenTetromino(), tetrominoAt: [2, 12], obstructedAt: [4, 11] },
-    { producer: () => new RedTetromino(), tetrominoAt: [2, 12], obstructedAt: [2, 11] },
-    { producer: () => new RedTetromino(), tetrominoAt: [2, 12], obstructedAt: [4, 10] },
+    { producer: () => new GreenTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [2, areaMidHeight - 2] },
+    { producer: () => new GreenTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [4, areaMidHeight - 1] },
+    { producer: () => new RedTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [2, areaMidHeight - 1] },
+    { producer: () => new RedTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [4, areaMidHeight - 2] },
 ] as ObstructedFromBelowTestCase[])('active tetromino becomes locked when obstructed from below', ({ producer, tetrominoAt, obstructedAt }) => {
     const game = new TetrisGame(producer);
     const tetromino = game.active;
@@ -74,9 +79,9 @@ test.each([
 });
 
 test.each([
-    { producer: () => new OrangeTetromino(), tetrominoAt: [2, 12], operation: "left", expectedPosition: [1, 12] },
-    { producer: () => new OrangeTetromino(), tetrominoAt: [2, 12], operation: "right", expectedPosition: [3, 12] },
-    { producer: () => new OrangeTetromino(), tetrominoAt: [2, 12], operation: "down", expectedPosition: [2, 11] }
+    { producer: () => new OrangeTetromino(), tetrominoAt: [2, areaMidHeight], operation: "left", expectedPosition: [1, areaMidHeight] },
+    { producer: () => new OrangeTetromino(), tetrominoAt: [2, areaMidHeight], operation: "right", expectedPosition: [3, areaMidHeight] },
+    { producer: () => new OrangeTetromino(), tetrominoAt: [2, areaMidHeight], operation: "down", expectedPosition: [2, areaMidHeight - 1] }
 ] as UnobstructedMovementTestCase[])('active tetromino can move when not obstructed', ({ producer, tetrominoAt, operation, expectedPosition }) => {
     const game = new TetrisGame(producer);
     game.active.position = tetrominoAt;
@@ -85,11 +90,11 @@ test.each([
 });
 
 test.each([
-    { producer: () => new GreenTetromino(), tetrominoAt: [2, 12], obstructedAt: [1, 11], operation: "left" },
-    { producer: () => new GreenTetromino(), tetrominoAt: [0, 12], obstructedAt: undefined, operation: "left" },
-    { producer: () => new GreenTetromino(), tetrominoAt: [2, 12], obstructedAt: [5, 12], operation: "right" },
-    { producer: () => new GreenTetromino(), tetrominoAt: [7, 12], obstructedAt: undefined, operation: "right" },
-    { producer: () => new GreenTetromino(), tetrominoAt: [2, 12], obstructedAt: [2, 10], operation: "down" },
+    { producer: () => new GreenTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [1, areaMidHeight - 1], operation: "left" },
+    { producer: () => new GreenTetromino(), tetrominoAt: [0, areaMidHeight], obstructedAt: undefined, operation: "left" },
+    { producer: () => new GreenTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [5, areaMidHeight], operation: "right" },
+    { producer: () => new GreenTetromino(), tetrominoAt: [7, areaMidHeight], obstructedAt: undefined, operation: "right" },
+    { producer: () => new GreenTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [2, areaMidHeight - 2], operation: "down" },
     { producer: () => new GreenTetromino(), tetrominoAt: [2, 1], obstructedAt: undefined, operation: "down" }
 ] as ObstructedMovementTestCase[])('active tetromino can not move when obstructed', ({ producer, tetrominoAt, obstructedAt, operation }) => {
     const game = new TetrisGame(producer);
