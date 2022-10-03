@@ -25,7 +25,7 @@ export class TetrisPlayArea {
     }
 
     hasBrickAt([x, y]: Position) {
-        return this.isInBounds(x, y) && (this.getBrickAt([x, y]) !== null);
+        return this.getBrickAt([x, y]) !== null;
     }
 
     getBrickAt([x, y]: Position): BrickColour | null {
