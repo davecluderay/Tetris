@@ -2,6 +2,12 @@ import { Tetromino, TetrominoProducer, produceRandomTetromino } from "./Tetromin
 import { PlayArea } from "./PlayArea";
 import { Position } from "./SharedTypes";
 
+// Outstanding tasks:
+// * Remove completed lines and drop remaining lines (with callbacks).
+// * Scoring system.
+// * Game over state.
+// * UI/audio.
+
 export class TetrisGame {
     private produceTetromino: TetrominoProducer;
     next: Tetromino;
@@ -34,6 +40,14 @@ export class TetrisGame {
         this.moveActiveTetromino(0, -1);
     }
 
+    public rotateLeft() {
+        this.rotateActiveTetromino(-1);
+    }
+
+    public rotateRight() {
+        this.rotateActiveTetromino(1);
+    }
+
     private setInitialPosition(tetromino: Tetromino) {
         tetromino.position = [Math.floor((this.playArea.width - tetromino.layoutSize) / 2) - 1, this.playArea.visibleHeight + 1];
     }
@@ -46,6 +60,27 @@ export class TetrisGame {
             return true;
         }
         return false;
+    }
+
+    private rotateActiveTetromino(dr: number) {
+        const active = this.active;
+        const forward = dr < 0 ? () => active.rotateLeft() : () => active.rotateRight();
+        const reverse = dr < 0 ? () => active.rotateRight() : () => active.rotateLeft();
+        const count = Math.abs(dr);
+
+        for (let n = 0; n < count; n++) { forward(); }
+
+        let [x, y] = this.active.position;
+        const kicks = [0, 1, -1, 2, -2, 3, -3];
+        for (let kick of kicks) {
+            const to: Position = [x + kick, y];
+            if (this.canPlace(active, to)) {
+                active.position = to;
+                return;
+            }
+        }
+
+        for (let n = 0; n < count; n++) { reverse(); }
     }
 
     private lockActiveTetromino() {
