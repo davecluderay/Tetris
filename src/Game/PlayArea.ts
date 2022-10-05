@@ -42,6 +42,35 @@ export class PlayArea {
         }
     }
 
+    findCompletedRows(): number[] {
+        const rows = [] as number[];
+        for (var y = 0; y < this.visibleHeight; y++) {
+            let count = 0;
+            for (var x = 0; x < this.width; x++) {
+                if (!this.hasBrickAt([x, y])) break;
+                count++;
+            }
+            if (count == this.width) {
+                rows.push(y);
+            }
+        }
+        return rows;
+    }
+
+    removeRows(rows: number[]) {
+        if (rows.length < 1) return;
+        const startY = rows.reduce((a, v) => Math.min(a, v), Number.MAX_SAFE_INTEGER);
+        let dropBy = 0;
+        for (var y = startY; y < this.layout.length; y++) {
+            if (rows.indexOf(y) > -1) {
+                dropBy++;
+            } else {
+                this.layout[y - dropBy] = this.layout[y];
+                this.layout[y] = Array(this.width).fill(null);
+            }
+        }
+    }
+
     private isInBounds(x: number, y: number) {
         return x >= 0 && x < this.width && y >= 0 && y < this.visibleHeight + 2;
     }

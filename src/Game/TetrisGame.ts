@@ -22,9 +22,15 @@ export class TetrisGame {
         this.setInitialPosition(this.active);
     }
 
-    public tick() {
+    public tick() { // TODO: callback mechanism for events: bricksAdded, bricksRemoved, bricksDropped
         if (!this.moveActiveTetromino(0, -1)) {
-            this.lockActiveTetromino();
+            this.lockActiveTetromino(); // bricksAdded
+            const completed = this.playArea.findCompletedRows();
+            if (completed.length > 0) {
+                // bricksRemoved
+                this.playArea.removeRows(completed);
+                // bricksDropped
+            }
         }
     }
 
