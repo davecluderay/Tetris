@@ -1,5 +1,7 @@
 import { BrickColour, Position } from "./SharedTypes";
 
+export type DroppedRow = { row: number, distance: number };
+
 export class PlayArea {
     static readonly width = 10;
     static readonly visibleHeight = 20;
@@ -57,9 +59,10 @@ export class PlayArea {
         return rows;
     }
 
-    removeRows(rows: number[]) {
-        if (rows.length < 1) return;
+    removeRows(rows: number[]): DroppedRow[] {
+        if (rows.length < 1) return [];
         const startY = rows.reduce((a, v) => Math.min(a, v), Number.MAX_SAFE_INTEGER);
+        const dropped: DroppedRow[] = [];
         let dropBy = 0;
         for (var y = startY; y < this.layout.length; y++) {
             if (rows.indexOf(y) > -1) {
@@ -67,8 +70,10 @@ export class PlayArea {
             } else {
                 this.layout[y - dropBy] = this.layout[y];
                 this.layout[y] = Array(this.width).fill(null);
+                dropped.push({ row: y, distance: dropBy });
             }
         }
+        return dropped;
     }
 
     private isInBounds(x: number, y: number) {

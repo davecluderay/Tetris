@@ -1,7 +1,7 @@
 import { TetrisGame } from "./TetrisGame";
 import { BlueTetromino, CyanTetromino, GreenTetromino, MagentaTetromino, OrangeTetromino, RedTetromino, Tetromino, TetrominoProducer, YellowTetromino } from "./Tetrominoes";
 import { BrickColour, Position } from "./SharedTypes";
-import { PlayArea } from "./PlayArea";
+import { DroppedRow, PlayArea } from "./PlayArea";
 
 const areaWidth = PlayArea.width;
 const areaVisibleHeight = PlayArea.visibleHeight;
@@ -9,6 +9,20 @@ const areaMidHeight = Math.floor(areaVisibleHeight / 2);
 
 type MovementOperation = "left" | "right" | "down";
 type RotationOperation = "rotateLeft" | "rotateRight";
+
+let tickCallbacks: {
+    onBricksLocked: jest.Mock<void,[locked: Position[]]>,
+    onRowsDestroyed: jest.Mock<void, [destroyed: number[], dropped: DroppedRow[]]>,
+    onGameOver: jest.Mock<void, []>
+};
+
+beforeEach(() => {
+    tickCallbacks = {
+        onBricksLocked: jest.fn((locked: Position[]) => {}),
+        onRowsDestroyed: jest.fn((destroyed: number[], dropped: DroppedRow[]) => {}),
+        onGameOver: jest.fn(() => {})
+    };
+})
 
 test('can create game', () => {
     const game = new TetrisGame();
@@ -49,17 +63,19 @@ test.each([
 test('active tetromino descends when not obstructed', () => {
     const game = new TetrisGame();
     let [x, y] = game.active.position;
-    game.tick();
+    game.tick(tickCallbacks);
     expect(game.active.position).toEqual([x, y - 1]);
 });
 
 test('active tetromino becomes locked at base of play area', () => {
-    const game = new TetrisGame();
+    const game = new TetrisGame(() => new CyanTetromino());
     let tetromino = game.active;
     let [x, _] = tetromino.position;
     tetromino.position = [x, 1];
-    game.tick();
+    game.tick(tickCallbacks);
     expect(game.active).not.toEqual(tetromino);
+    expect(tickCallbacks.onBricksLocked.mock.calls).toHaveLength(1);
+    expect(tickCallbacks.onBricksLocked.mock.calls[0][0]).toEqual(expect.arrayContaining([[x, 0], [x + 1, 0], [x + 2, 0], [x + 3, 0]]))
 });
 
 type ObstructedFromBelowTestCase = { producer: TetrominoProducer, tetrominoAt: Position, obstructedAt: Position };
@@ -73,7 +89,7 @@ test.each([
     const tetromino = game.active;
     tetromino.position = tetrominoAt;
     game.playArea.setBrickAt(obstructedAt, BrickColour.Blue);
-    game.tick();
+    game.tick(tickCallbacks);
     expect(game.active).not.toEqual(tetromino);
 });
 

@@ -1,35 +1,53 @@
 import { Tetromino, TetrominoProducer, produceRandomTetromino } from "./Tetrominoes";
-import { PlayArea } from "./PlayArea";
+import { DroppedRow, PlayArea } from "./PlayArea";
 import { Position } from "./SharedTypes";
 
 // Outstanding tasks:
-// * Remove completed lines and drop remaining lines (with callbacks).
-// * Scoring system.
-// * Game over state.
-// * UI/audio.
+// * Test row completion and verify that onRowsDestroyed callback is called correctly.
+// * Test game over callback is called correctly.
+// * Scoring system and stages.
+// * UI.
+// * Audio.
+
+export type TickCallbacks = {
+    onBricksLocked: (locked: Position[]) => void,
+    onRowsDestroyed: (destroyed: number[], dropped: DroppedRow[]) => void,
+    onGameOver: () => void
+};
 
 export class TetrisGame {
     private produceTetromino: TetrominoProducer;
     next: Tetromino;
     active: Tetromino;
     playArea: PlayArea;
+    isOver: boolean;
 
     constructor(produceTetromino?: TetrominoProducer) {
         this.produceTetromino = produceTetromino ?? produceRandomTetromino;
         this.playArea = new PlayArea();
+        this.isOver = false;
         this.next = this.produceTetromino();
         this.active = this.produceTetromino();
         this.setInitialPosition(this.active);
     }
 
-    public tick() { // TODO: callback mechanism for events: bricksAdded, bricksRemoved, bricksDropped
+    public tick(callbacks: TickCallbacks) {
+        if (this.isOver) {
+            callbacks.onGameOver();
+            return;
+        }
+
         if (!this.moveActiveTetromino(0, -1)) {
-            this.lockActiveTetromino(); // bricksAdded
+            const locked = this.lockActiveTetromino();
+            callbacks.onBricksLocked(locked);
             const completed = this.playArea.findCompletedRows();
             if (completed.length > 0) {
-                // bricksRemoved
-                this.playArea.removeRows(completed);
-                // bricksDropped
+                const dropped = this.playArea.removeRows(completed);
+                callbacks.onRowsDestroyed(completed, dropped);
+            }
+            if (!this.canPlace(this.active, this.active.position)) {
+                this.isOver = true;
+                callbacks.onGameOver();
             }
         }
     }
@@ -89,7 +107,8 @@ export class TetrisGame {
         for (let n = 0; n < count; n++) { reverse(); }
     }
 
-    private lockActiveTetromino() {
+    private lockActiveTetromino(): Position[] {
+        const locked: Position[] = [];
         const tetromino = this.active;
         const [atX, atY] = tetromino.position;
         for (let layoutY = 0; layoutY < tetromino.layoutSize; layoutY++) {
@@ -98,12 +117,13 @@ export class TetrisGame {
                 const [x, y] = [atX + layoutX, atY - layoutY];
                 if (!this.playArea.contains([x, y])) continue;
                 this.playArea.setBrickAt([x, y], tetromino.colour);
+                locked.push([x, y]);
             }
         }
-
         this.active = this.next;
         this.setInitialPosition(this.active);
         this.next = this.produceTetromino();
+        return locked;
     }
 
     private canPlace(tetromino: Tetromino, at: Position): boolean {
