@@ -110,7 +110,7 @@ test.each([
     { producer: () => new GreenTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [1, areaMidHeight - 1], operation: "left" },
     { producer: () => new GreenTetromino(), tetrominoAt: [0, areaMidHeight], obstructedAt: undefined, operation: "left" },
     { producer: () => new GreenTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [5, areaMidHeight], operation: "right" },
-    { producer: () => new GreenTetromino(), tetrominoAt: [7, areaMidHeight], obstructedAt: undefined, operation: "right" },
+    { producer: () => new GreenTetromino(), tetrominoAt: [PlayArea.width - 3, areaMidHeight], obstructedAt: undefined, operation: "right" },
     { producer: () => new GreenTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [2, areaMidHeight - 2], operation: "down" },
     { producer: () => new GreenTetromino(), tetrominoAt: [2, 1], obstructedAt: undefined, operation: "down" }
 ] as ObstructedMovementTestCase[])('active tetromino can not move when obstructed', ({ producer, tetrominoAt, obstructedAt, operation }) => {
