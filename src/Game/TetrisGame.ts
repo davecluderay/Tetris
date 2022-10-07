@@ -3,8 +3,6 @@ import { DroppedRow, PlayArea } from "./PlayArea";
 import { Position } from "./SharedTypes";
 
 // Outstanding tasks:
-// * Test row completion and verify that onRowsDestroyed callback is called correctly.
-// * Test game over callback is called correctly.
 // * Scoring system and stages.
 // * UI.
 // * Audio.
@@ -40,7 +38,8 @@ export class TetrisGame {
         if (!this.moveActiveTetromino(0, -1)) {
             const locked = this.lockActiveTetromino();
             callbacks.onBricksLocked(locked);
-            const completed = this.playArea.findCompletedRows();
+            const [min, max] = this.getExtentsY(locked);
+            const completed = this.playArea.findCompletedRows(min, max);
             if (completed.length > 0) {
                 const dropped = this.playArea.removeRows(completed);
                 callbacks.onRowsDestroyed(completed, dropped);
@@ -138,5 +137,10 @@ export class TetrisGame {
             }
         }
         return true;
+    }
+
+    private getExtentsY(locked: Position[]): [min: number, max: number] {
+        const values = locked.map(([_, y]) => y);
+        return [Math.min(...values), Math.max(...values)];
     }
 }

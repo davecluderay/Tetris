@@ -44,9 +44,9 @@ export class PlayArea {
         }
     }
 
-    findCompletedRows(): number[] {
+    findCompletedRows(min: number, max: number): number[] {
         const rows = [] as number[];
-        for (var y = 0; y < this.visibleHeight; y++) {
+        for (var y = min; y <= max; y++) {
             let count = 0;
             for (var x = 0; x < this.width; x++) {
                 if (!this.hasBrickAt([x, y])) break;

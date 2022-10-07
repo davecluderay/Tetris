@@ -185,3 +185,82 @@ test.each([
     expect(game.active.position).toEqual(tetrominoAt);
     expect(game.active.rotation).toBe(startRotation);
 });
+
+type RowsDestroyedTestCase = { provider: TetrominoProducer, startRotation: number, startPosition: Position, expectedDestroyed: number[], expectedDropped: DroppedRow[] };
+test.each([
+    {
+        provider: () => new CyanTetromino(), startRotation: 1, startPosition: [2, 4], expectedDestroyed: [1, 2, 3, 4],
+        expectedDropped: range(5, PlayArea.visibleHeight + 1).map(n => ({ row: n, distance: 4 } as DroppedRow))
+    },
+    {
+        provider: () => new MagentaTetromino(), startRotation: 2, startPosition: [3, 6], expectedDestroyed: [4],
+        expectedDropped: range(5, PlayArea.visibleHeight + 1).map(n => ({ row: n, distance: 1 } as DroppedRow))
+    },
+    {
+        provider: () => new BlueTetromino(), startRotation: 1, startPosition: [3, 5], expectedDestroyed: [3, 4],
+        expectedDropped: range(5, PlayArea.visibleHeight + 1).map(n => ({ row: n, distance: 2 } as DroppedRow))
+    }
+] as RowsDestroyedTestCase[])('completed rows are destroyed', ({ provider, startRotation, startPosition, expectedDestroyed, expectedDropped }) => {
+    const game = new TetrisGame(provider);
+    for (let n = 0; n < startRotation; n++) {
+        game.active.rotateRight();
+    }
+    game.active.position = startPosition;
+    setupPlayArea(game, [
+        '#### #####',
+        '#### #####',
+        '#### #####',
+        '#### #####',
+        '##########'
+    ]);
+    game.tick(tickCallbacks);
+    expect(tickCallbacks.onRowsDestroyed.mock.calls).toHaveLength(1);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[0]).toEqual(expectedDestroyed);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[1]).toEqual(expectedDropped);
+});
+
+test('rows drop correctly when destroyed rows are separated', () => {
+    const game = new TetrisGame(() => new CyanTetromino());
+    const expectedDropped: DroppedRow[] = [{ row: 3, distance: 1 }, ...range(5, game.playArea.visibleHeight + 1).map(n => ({ row: n, distance: 2 }))];
+    game.active.rotateRight();
+    game.active.position = [2, 4];
+    setupPlayArea(game, [
+        '#### #####',
+        '#  # #   #',
+        '#### #####',
+        '#  # #   #',
+        '##########'
+    ]);
+    game.tick(tickCallbacks);
+    expect(tickCallbacks.onRowsDestroyed.mock.calls).toHaveLength(1);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[0]).toEqual([2, 4]);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[1]).toEqual(expectedDropped);
+
+})
+
+test('game over', () => {
+    const game = new TetrisGame(() => new YellowTetromino());
+    game.playArea.setBrickAt([4, game.playArea.visibleHeight - 1], BrickColour.Red);
+    game.tick(tickCallbacks);
+    expect(tickCallbacks.onGameOver.mock.calls).toHaveLength(1);
+    expect(game.isOver).toBe(true);
+});
+
+function setupPlayArea(game: TetrisGame, baseLayout: string[]) {
+    for (var y = 0; y < baseLayout.length; y++) {
+        for (var x = 0; x < game.playArea.width; x++) {
+            if (baseLayout[baseLayout.length - y - 1][x] != ' ') {
+                game.playArea.setBrickAt([x, y], BrickColour.Red);
+            }
+        }
+    }
+}
+
+function range(from: number, to: number): number[] {
+    const range = [];
+    const dn = Math.sign(to - from);
+    for (let n = from; n != to + dn; n += dn) {
+        range.push(n);
+    }
+    return range;
+}
