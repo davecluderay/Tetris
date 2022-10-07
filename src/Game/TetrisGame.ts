@@ -1,9 +1,9 @@
 import { Tetromino, TetrominoProducer, produceRandomTetromino } from "./Tetrominoes";
 import { DroppedRow, PlayArea } from "./PlayArea";
 import { Position } from "./SharedTypes";
+import { ScoreKeeper } from "./ScoreKeeper";
 
 // Outstanding tasks:
-// * Scoring system and stages.
 // * UI.
 // * Audio.
 
@@ -15,6 +15,7 @@ export type TickCallbacks = {
 
 export class TetrisGame {
     private produceTetromino: TetrominoProducer;
+    private scoreKeeper: ScoreKeeper;
     next: Tetromino;
     active: Tetromino;
     playArea: PlayArea;
@@ -22,6 +23,7 @@ export class TetrisGame {
 
     constructor(produceTetromino?: TetrominoProducer) {
         this.produceTetromino = produceTetromino ?? produceRandomTetromino;
+        this.scoreKeeper = new ScoreKeeper();
         this.playArea = new PlayArea();
         this.isOver = false;
         this.next = this.produceTetromino();
@@ -42,6 +44,7 @@ export class TetrisGame {
             const completed = this.playArea.findCompletedRows(min, max);
             if (completed.length > 0) {
                 const dropped = this.playArea.removeRows(completed);
+                this.scoreKeeper.record(completed.length);
                 callbacks.onRowsDestroyed(completed, dropped);
             }
             if (!this.canPlace(this.active, this.active.position)) {

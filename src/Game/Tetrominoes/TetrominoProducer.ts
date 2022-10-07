@@ -11,18 +11,23 @@ export interface TetrominoProducer {
     (): Tetromino
 };
 
+const activators = [
+    () => new BlueTetromino() as Tetromino,
+    () => new CyanTetromino() as Tetromino,
+    () => new MagentaTetromino() as Tetromino,
+    () => new OrangeTetromino() as Tetromino,
+    () => new YellowTetromino() as Tetromino,
+    () => new GreenTetromino() as Tetromino,
+    () => new RedTetromino() as Tetromino
+];
+
+let unsafeRunLength = 0;
 const produceRandomTetromino: TetrominoProducer = () => {
-    const activators = [
-        BlueTetromino,
-        CyanTetromino,
-        GreenTetromino,
-        MagentaTetromino,
-        OrangeTetromino,
-        RedTetromino,
-        YellowTetromino
-    ];
-    const index = Math.floor(Math.random() * activators.length);
-    return new activators[index]();
+    let exclusiveUpperBound = (unsafeRunLength < 4) ? 7 : 5;
+    const activatorIndex = Math.floor(Math.random() * exclusiveUpperBound);
+    const tetromino =  activators[activatorIndex]();
+    unsafeRunLength = (tetromino instanceof RedTetromino || tetromino instanceof GreenTetromino) ? (unsafeRunLength + 1) : 0;
+    return tetromino;
 };
 
 export { produceRandomTetromino };
