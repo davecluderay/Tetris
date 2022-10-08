@@ -1,8 +1,18 @@
 export class ScoreKeeper {
     private lastRowsDestroyed = 0;
+    private ticksSinceLastTetrominoLocked = 0;
     score = 0;
 
-    record(rowsDestroyed: number) {
+    recordTick() {
+        this.ticksSinceLastTetrominoLocked++;
+    }
+
+    recordTetrominoLocked() {
+        this.score += (this.ticksSinceLastTetrominoLocked * 5);
+        this.ticksSinceLastTetrominoLocked = 0;
+    }
+
+    recordRowsDestroyed(rowsDestroyed: number) {
         switch (rowsDestroyed) {
             case 1:
                 this.score += 100;

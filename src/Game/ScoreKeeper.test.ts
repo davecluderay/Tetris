@@ -7,7 +7,7 @@ test.each([
     [4, 800]
 ])('scores appropriately based on rows destroyed', (rowsDestroyed, expectedScore) => {
     const scoreKeeper = new ScoreKeeper();
-    scoreKeeper.record(rowsDestroyed);
+    scoreKeeper.recordRowsDestroyed(rowsDestroyed);
     expect(scoreKeeper.score).toBe(expectedScore);
 });
 
@@ -23,7 +23,7 @@ test('scores extra for continuous runs of four', () => {
     ];
     const scoreKeeper = new ScoreKeeper();
     for (let [rowsDestroyed, expectedScore] of sequence) {
-        scoreKeeper.record(rowsDestroyed);
+        scoreKeeper.recordRowsDestroyed(rowsDestroyed);
         expect(scoreKeeper.score).toBe(expectedScore);
     }
 });

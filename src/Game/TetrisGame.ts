@@ -37,14 +37,17 @@ export class TetrisGame {
             return;
         }
 
+        this.scoreKeeper.recordTick();
+
         if (!this.moveActiveTetromino(0, -1)) {
             const locked = this.lockActiveTetromino();
+            this.scoreKeeper.recordTetrominoLocked();
             callbacks.onBricksLocked(locked);
             const [min, max] = this.getExtentsY(locked);
             const completed = this.playArea.findCompletedRows(min, max);
             if (completed.length > 0) {
                 const dropped = this.playArea.removeRows(completed);
-                this.scoreKeeper.record(completed.length);
+                this.scoreKeeper.recordRowsDestroyed(completed.length);
                 callbacks.onRowsDestroyed(completed, dropped);
             }
             if (!this.canPlace(this.active, this.active.position)) {
