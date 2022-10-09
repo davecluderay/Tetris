@@ -3,7 +3,9 @@ import { Canvas } from "@react-three/fiber";
 import { PlayArea } from './PlayArea';
 import { Brick } from './Brick';
 import { ReactNode, useMemo } from 'react';
-import { produceRandomTetromino } from '../game/Tetrominoes';
+import { MagentaTetromino, produceRandomTetromino } from '../game/Tetrominoes';
+import { Tetromino } from './Tetromino';
+import { BrickColour } from '../game/SharedTypes';
 
 type TetrisGameProps = {
     showAxes?: boolean
@@ -27,6 +29,7 @@ function TetrisGame(props: TetrisGameProps) {
             <pointLight position={[0, -10, 10]} intensity={0.75} />
             <PlayArea position={[0, 0, -1]} width={10} height={20}>
                 {bricks}
+                <Tetromino colour={BrickColour.Magenta} layout={MagentaTetromino.layout} position={[4, 10, 1]} rotationZ={0} />
             </PlayArea>
         </Canvas>
     )
