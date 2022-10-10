@@ -7,6 +7,7 @@ import { GreenTetromino, produceRandomTetromino } from '../game/Tetrominoes';
 import { Tetromino } from './Tetromino';
 import { BrickColour } from '../game/SharedTypes';
 import { PreviewArea } from './PreviewArea';
+import { ScoreArea } from './ScoreArea';
 
 type TetrisGameProps = {
     showAxes?: boolean
@@ -33,6 +34,7 @@ function TetrisGame(props: TetrisGameProps) {
                 <Tetromino colour={BrickColour.Green} layout={GreenTetromino.layout} position={[4, 10, 0.001]} rotationZ={-0.5} />
             </PlayArea>
             <PreviewArea position={[11, 15, 0]} current={produceRandomTetromino()} />
+            <ScoreArea position={[16, 14.5, 1]} score={0} />
         </Canvas>
     )
 }

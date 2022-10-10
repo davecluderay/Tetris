@@ -24,7 +24,7 @@ function PreviewArea(props: PreviewAreaProps) {
             </mesh>
             {tetromino}
         </group>
-    )
+    );
 }
 
 function renderTetromino(tetromino: Tetromino):  ReactNode[] {
