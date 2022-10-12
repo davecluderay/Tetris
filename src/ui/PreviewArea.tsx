@@ -1,5 +1,5 @@
 import { ReactNode, useMemo } from "react";
-import { Tetromino } from "../game/Tetrominoes";
+import { Tetromino } from "../game/tetrominoes";
 import { Brick } from "./Brick";
 
 type PreviewAreaProps = {

@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { PlayArea } from './PlayArea';
 import { Brick } from './Brick';
 import { ReactNode, useMemo } from 'react';
-import { GreenTetromino, produceRandomTetromino } from '../game/Tetrominoes';
+import { GreenTetromino, produceRandomTetromino } from '../game/tetrominoes';
 import { Tetromino } from './Tetromino';
 import { BrickColour } from '../game/SharedTypes';
 import { PreviewArea } from './PreviewArea';

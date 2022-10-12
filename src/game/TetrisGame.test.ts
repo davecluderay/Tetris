@@ -1,5 +1,5 @@
 import { TetrisGame } from "./TetrisGame";
-import { BlueTetromino, CyanTetromino, GreenTetromino, MagentaTetromino, OrangeTetromino, RedTetromino, Tetromino, TetrominoProducer, YellowTetromino } from "./Tetrominoes";
+import { BlueTetromino, CyanTetromino, GreenTetromino, MagentaTetromino, OrangeTetromino, RedTetromino, Tetromino, TetrominoProducer, YellowTetromino } from "./tetrominoes";
 import { BrickColour, Position } from "./SharedTypes";
 import { DroppedRow, PlayArea } from "./PlayArea";
 

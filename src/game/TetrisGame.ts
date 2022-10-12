@@ -1,4 +1,4 @@
-import { Tetromino, TetrominoProducer, produceRandomTetromino } from "./Tetrominoes";
+import { Tetromino, TetrominoProducer, produceRandomTetromino } from "./tetrominoes";
 import { DroppedRow, PlayArea } from "./PlayArea";
 import { Position } from "./SharedTypes";
 import { ScoreKeeper } from "./ScoreKeeper";
