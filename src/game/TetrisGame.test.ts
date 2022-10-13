@@ -48,13 +48,13 @@ test('new game has play area defined', () => {
 
 type InitialPositionTestCase = { producer: TetrominoProducer, expectedPosition: Position };
 test.each([
-    { producer: () => new BlueTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
-    { producer: () => new CyanTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
-    { producer: () => new GreenTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
-    { producer: () => new MagentaTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
-    { producer: () => new OrangeTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
-    { producer: () => new RedTetromino(), expectedPosition: [areaWidth / 2 - 3, areaVisibleHeight + 1] },
-    { producer: () => new YellowTetromino(), expectedPosition: [areaWidth / 2 - 2, areaVisibleHeight + 1] }
+    { producer: () => new BlueTetromino(), expectedPosition: [areaWidth / 2 - 2, areaVisibleHeight + 1] },
+    { producer: () => new CyanTetromino(), expectedPosition: [areaWidth / 2 - 2, areaVisibleHeight + 1] },
+    { producer: () => new GreenTetromino(), expectedPosition: [areaWidth / 2 - 2, areaVisibleHeight + 1] },
+    { producer: () => new MagentaTetromino(), expectedPosition: [areaWidth / 2 - 2, areaVisibleHeight + 1] },
+    { producer: () => new OrangeTetromino(), expectedPosition: [areaWidth / 2 - 2, areaVisibleHeight + 1] },
+    { producer: () => new RedTetromino(), expectedPosition: [areaWidth / 2 - 2, areaVisibleHeight + 1] },
+    { producer: () => new YellowTetromino(), expectedPosition: [areaWidth / 2 - 1, areaVisibleHeight + 1] }
 ] as InitialPositionTestCase[])('initial tetromino position is central', ({ producer, expectedPosition }: InitialPositionTestCase) => {
     const game = new TetrisGame(producer);
     expect(game.active.position).toEqual(expectedPosition);

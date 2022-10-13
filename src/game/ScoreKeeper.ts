@@ -25,7 +25,7 @@ export class ScoreKeeper {
                 this.score += 400;
                 break;
             case 4:
-                this.score += this.lastRowsDestroyed == 4 ? 1200 : 800;
+                this.score += this.lastRowsDestroyed === 4 ? 1200 : 800;
                 break;
         }
         this.lastRowsDestroyed = rowsDestroyed;

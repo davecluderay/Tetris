@@ -15,7 +15,7 @@ export type TickCallbacks = {
 
 export class TetrisGame {
     private produceTetromino: TetrominoProducer;
-    private scoreKeeper: ScoreKeeper;
+    private scoreKeeper: ScoreKeeper; 
     next: Tetromino;
     active: Tetromino;
     playArea: PlayArea;
@@ -30,6 +30,8 @@ export class TetrisGame {
         this.active = this.produceTetromino();
         this.setInitialPosition(this.active);
     }
+
+    get score() { return this.scoreKeeper.score; }
 
     public tick(callbacks: TickCallbacks) {
         if (this.isOver) {
@@ -78,7 +80,7 @@ export class TetrisGame {
     }
 
     private setInitialPosition(tetromino: Tetromino) {
-        tetromino.position = [Math.floor((this.playArea.width - tetromino.layoutSize) / 2) - 1, this.playArea.visibleHeight + 1];
+        tetromino.position = [Math.floor((this.playArea.width - tetromino.layoutSize) / 2), this.playArea.visibleHeight + 1];
     }
 
     private moveActiveTetromino(dx: number, dy: number) : boolean {

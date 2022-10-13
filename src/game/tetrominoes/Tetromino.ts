@@ -4,6 +4,7 @@ export abstract class Tetromino {
     position: [x: number, y: number];
     rotation: number;
     colour: BrickColour;
+    baseLayout: number[][];
     layout: number[][];
     layoutSize: number;
 
@@ -11,6 +12,7 @@ export abstract class Tetromino {
         this.position = position;
         this.rotation = rotation;
         this.colour = colour;
+        this.baseLayout = layout;
         this.layout = layout;
         this.layoutSize = layout.length;
     }

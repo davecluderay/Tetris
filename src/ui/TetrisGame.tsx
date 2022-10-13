@@ -3,9 +3,9 @@ import { Canvas } from "@react-three/fiber";
 import { PlayArea } from './PlayArea';
 import { Brick } from './Brick';
 import { ReactNode, useMemo } from 'react';
-import { GreenTetromino, produceRandomTetromino } from '../game/tetrominoes';
+import { TetrisGame as Game } from '../game/TetrisGame'
+import { produceRandomTetromino } from '../game/tetrominoes';
 import { Tetromino } from './Tetromino';
-import { BrickColour } from '../game/SharedTypes';
 import { PreviewArea } from './PreviewArea';
 import { ScoreArea } from './ScoreArea';
 
@@ -14,8 +14,14 @@ type TetrisGameProps = {
 }
 
 function TetrisGame(props: TetrisGameProps) {
+    const game = useMemo(() => new Game(), []);
+    const { active } = game;
+
     const bricks = useMemo(() => {
         const results: ReactNode[] = [];
+        // for (const {brickColour: colour, position: [x, y] } of Array.from(game.playArea.getBricks())) {
+        //     results.push(<Brick key={`${x}-${y}`} position={[x, y, 0]} colour={colour} />)
+        // }
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 10; x++) {
                 if (Math.random() * y < 1) {
@@ -31,10 +37,10 @@ function TetrisGame(props: TetrisGameProps) {
             <pointLight position={[0, -10, 10]} intensity={0.75} />
             <PlayArea position={[0, 0, 0]} width={10} height={20}>
                 {bricks}
-                <Tetromino colour={BrickColour.Green} layout={GreenTetromino.layout} position={[4, 10, 0.001]} rotationZ={-0.5} />
+                <Tetromino colour={active.colour} layout={active.baseLayout} position={[...active.position, 0.001]} rotationZ={active.rotation} />
             </PlayArea>
-            <PreviewArea position={[11, 15, 0]} current={produceRandomTetromino()} />
-            <ScoreArea position={[16, 14.5, 1]} score={0} />
+            <PreviewArea position={[11, 15, 0]} current={game.next} />
+            <ScoreArea position={[16, 14.5, 1]} score={game.score} />
         </Canvas>
     )
 }

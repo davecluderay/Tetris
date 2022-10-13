@@ -29,7 +29,7 @@ export class PlayArea {
     }
 
     setBrickAt([x, y]: Position, colour: BrickColour | null) {
-        if (!this.isInBounds(x, y)) throw `Out of bounds: ${[x, y]}`
+        if (!this.isInBounds(x, y)) throw new Error(`Out of bounds: ${[x, y]}`);
         this.layout[y][x] = colour;
     }
 
@@ -52,7 +52,7 @@ export class PlayArea {
                 if (!this.hasBrickAt([x, y])) break;
                 count++;
             }
-            if (count == this.width) {
+            if (count === this.width) {
                 rows.push(y);
             }
         }

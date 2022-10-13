@@ -28,15 +28,15 @@ function PreviewArea(props: PreviewAreaProps) {
 }
 
 function renderTetromino(tetromino: Tetromino):  ReactNode[] {
-    const {layout, colour} = tetromino;
+    const {baseLayout: layout, colour} = tetromino;
     let [minX, minY, maxX, maxY] = [Number.MAX_VALUE, Number.MAX_VALUE, 0, 0];
     const bricksAt: [x: number, y: number][] = [];
     for (let y = 0; y < layout.length; y++) {
         for (let x = 0; x < layout[y].length; x++) {
             if (layout[y][x] === 1) {
                 [minX, maxX] = [Math.min(minX, x), Math.max(maxX, x)];
-                [minY, maxY] = [Math.min(minY, y), Math.max(maxY, y)];
-                bricksAt.push([x, y]);
+                [minY, maxY] = [Math.min(minY, layout.length - y), Math.max(maxY, layout.length - y)];
+                bricksAt.push([x, layout.length - y]);
             }
         }
     }
