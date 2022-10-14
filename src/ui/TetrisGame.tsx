@@ -2,12 +2,13 @@ import './TetrisGame.css';
 import { Canvas } from "@react-three/fiber";
 import { PlayArea } from './PlayArea';
 import { Brick } from './Brick';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useReducer } from 'react';
 import { TetrisGame as Game } from '../game/TetrisGame'
 import { produceRandomTetromino } from '../game/tetrominoes';
 import { Tetromino } from './Tetromino';
 import { PreviewArea } from './PreviewArea';
 import { ScoreArea } from './ScoreArea';
+import { TetrisControls } from './TetrisControls';
 
 type TetrisGameProps = {
     showAxes?: boolean
@@ -16,6 +17,8 @@ type TetrisGameProps = {
 function TetrisGame(props: TetrisGameProps) {
     const game = useMemo(() => new Game(), []);
     const { active } = game;
+
+    const [_, reRender] = useReducer(n => n + 1, 0);
 
     const bricks = useMemo(() => {
         const results: ReactNode[] = [];
@@ -37,10 +40,16 @@ function TetrisGame(props: TetrisGameProps) {
             <pointLight position={[0, -10, 10]} intensity={0.75} />
             <PlayArea position={[0, 0, 0]} width={10} height={20}>
                 {bricks}
-                <Tetromino colour={active.colour} layout={active.baseLayout} position={[...active.position, 0.001]} rotationZ={active.rotation} />
+                <Tetromino colour={active.colour} layout={active.baseLayout} position={[...active.position, 0.001]} rotationZ={-active.rotation} />
             </PlayArea>
             <PreviewArea position={[11, 15, 0]} current={game.next} />
             <ScoreArea position={[16, 14.5, 1]} score={game.score} />
+            <TetrisControls
+                onLeft={() => { game.left(); reRender(); }}
+                onRight={() => { game.right(); reRender(); }}
+                onDown={() => { game.down(); reRender(); }}
+                onRotateLeft={() => { game.rotateLeft(); reRender(); }}
+                onRotateRight={() => { game.rotateRight(); reRender(); }} />
         </Canvas>
     )
 }

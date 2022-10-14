@@ -41,7 +41,7 @@ function renderTetromino(tetromino: Tetromino):  ReactNode[] {
         }
     }
     const [width, height] = [maxX - minX + 1, maxY - minY + 1];
-    return bricksAt.map(([x, y]) => <Brick position={[x - minX - width * 0.5, y - minY - height * 0.5, 0.5]} colour={colour} />);
+    return bricksAt.map(([x, y], i) => <Brick key={i} position={[x - minX - width * 0.5, y - minY - height * 0.5, 0.5]} colour={colour} />);
 }
 
 // Position provided is the bottom-left corner.
