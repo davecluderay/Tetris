@@ -7,12 +7,14 @@ type PreviewAreaProps = {
     current?: Tetromino
 };
 
+let id = 0;
+
 function PreviewArea(props: PreviewAreaProps) {
     const size = 5;
     const current = props.current;
     const tetromino = useMemo<ReactNode[]>(() => {
         if (!current) return [];
-        return renderTetromino(current);
+        return renderTetromino(current, id++);
     }, [current]);
     const position = adjustPosition(props.position, [size, size, 1]);
     const material = <meshStandardMaterial color="#39241c" />
@@ -27,7 +29,7 @@ function PreviewArea(props: PreviewAreaProps) {
     );
 }
 
-function renderTetromino(tetromino: Tetromino):  ReactNode[] {
+function renderTetromino(tetromino: Tetromino, id: number):  ReactNode[] {
     const {baseLayout: layout, colour} = tetromino;
     let [minX, minY, maxX, maxY] = [Number.MAX_VALUE, Number.MAX_VALUE, 0, 0];
     const bricksAt: [x: number, y: number][] = [];
@@ -41,7 +43,7 @@ function renderTetromino(tetromino: Tetromino):  ReactNode[] {
         }
     }
     const [width, height] = [maxX - minX + 1, maxY - minY + 1];
-    return bricksAt.map(([x, y], i) => <Brick key={i} position={[x - minX - width * 0.5, y - minY - height * 0.5, 0.5]} colour={colour} />);
+    return bricksAt.map(([x, y], i) => <Brick key={`${id}-${i}`} position={[x - minX - width * 0.5, y - minY - height * 0.5, 0.5]} colour={colour} />);
 }
 
 // Position provided is the bottom-left corner.

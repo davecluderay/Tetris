@@ -57,7 +57,7 @@ function TetrisGame(props: TetrisGameProps) {
 
     const bricks = useMemo(() => {
         const source = [...game.playArea.getBricks()];
-        return source.map((brick, i) => <Brick key={i} position={[...brick.position, 0]} colour={brick.brickColour} />);
+        return source.map(brick => <Brick key={brick.id} position={[...brick.position, 0]} colour={brick.colour} />);
     }, [game.playArea, tetrominoCount]);
 
     return (
