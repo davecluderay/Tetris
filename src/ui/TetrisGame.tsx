@@ -2,13 +2,12 @@ import './TetrisGame.css';
 import { Canvas } from "@react-three/fiber";
 import { PlayArea } from './PlayArea';
 import { Brick } from './Brick';
-import { ReactNode, useMemo, useReducer } from 'react';
+import { useMemo, useReducer } from 'react';
 import { TetrisGame as Game } from '../game/TetrisGame'
-import { produceRandomTetromino } from '../game/tetrominoes';
 import { Tetromino } from './Tetromino';
 import { PreviewArea } from './PreviewArea';
 import { ScoreArea } from './ScoreArea';
-import { TetrisControls } from './TetrisControls';
+import { Controls } from './Controls';
 
 type TetrisGameProps = {
     showAxes?: boolean
@@ -18,22 +17,13 @@ function TetrisGame(props: TetrisGameProps) {
     const game = useMemo(() => new Game(), []);
     const { active } = game;
 
-    const [_, reRender] = useReducer(n => n + 1, 0);
+    const [, reRender] = useReducer(n => n + 1, 0);
 
     const bricks = useMemo(() => {
-        const results: ReactNode[] = [];
-        // for (const {brickColour: colour, position: [x, y] } of Array.from(game.playArea.getBricks())) {
-        //     results.push(<Brick key={`${x}-${y}`} position={[x, y, 0]} colour={colour} />)
-        // }
-        for (var y = 0; y < 8; y++) {
-            for (var x = 0; x < 10; x++) {
-                if (Math.random() * y < 1) {
-                    results.push(<Brick key={`${x}-${y}`} position={[x, y, 0]} colour={produceRandomTetromino().colour} />);
-                }
-            }
-        }
-        return results;
-    }, []);
+        const source = [...game.playArea.getBricks()];
+        return source.map((brick, i) => <Brick key={i} position={[...brick.position, 0]} colour={brick.brickColour} />);
+    }, [game.playArea]);
+
     return (
         <Canvas className="TetrisGame" orthographic camera={{ zoom: 35, position: [0, 15, 30], far: 100, near: 20 }} onCreated={state => state.camera.lookAt(5, 10, 0)}>
             <ambientLight intensity={0.5} />
@@ -44,7 +34,7 @@ function TetrisGame(props: TetrisGameProps) {
             </PlayArea>
             <PreviewArea position={[11, 15, 0]} current={game.next} />
             <ScoreArea position={[16, 14.5, 1]} score={game.score} />
-            <TetrisControls
+            <Controls
                 onLeft={() => { game.left(); reRender(); }}
                 onRight={() => { game.right(); reRender(); }}
                 onDown={() => { game.down(); reRender(); }}

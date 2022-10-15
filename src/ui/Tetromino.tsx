@@ -26,7 +26,7 @@ function Tetromino(props: TetrominoProps) {
       }
     }
     return results
-  }, [ layout, size ]);
+  }, [layout, size]);
 
   return (
     <animated.group position={spring.position} rotation-z={spring.rotationZ}>

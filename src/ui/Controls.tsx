@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
-type TetrisControlsProps = {
+type ControlsProps = {
     target?: HTMLElement | undefined,
     onLeft: () => void,
     onRight: () => void,
@@ -9,32 +9,32 @@ type TetrisControlsProps = {
     onRotateRight: () => void
 }
 
-export function TetrisControls(props: TetrisControlsProps) {
-    function handleKeyboardEvent(e: KeyboardEvent) {
+export function Controls({ target, onLeft, onRight, onDown, onRotateLeft, onRotateRight }: ControlsProps) {
+    const handleKeyboardEvent = useCallback((e: KeyboardEvent) => {
         switch (e.code) {
             case 'ArrowLeft':
-                props.onLeft();
+                onLeft();
                 break;
             case 'ArrowRight':
-                props.onRight();
+                onRight();
                 break;
             case 'ArrowDown':
-                props.onDown();
+                onDown();
                 break;
             case 'KeyZ':
-                props.onRotateLeft();
+                onRotateLeft();
                 break;
             case 'KeyX':
-                props.onRotateRight();
+                onRotateRight();
                 break;
         }
-    }
+    }, [onLeft, onRight, onDown, onRotateLeft, onRotateRight]);
 
     useEffect(() => {
-        const t = props.target ?? window;
+        const t = target ?? window;
         const handler = (e: Event) => handleKeyboardEvent(e as KeyboardEvent);
         t.addEventListener('keydown', handler);
         return () => t.removeEventListener('keydown', handler);
-    }, Object.values(props))
+    }, [target, handleKeyboardEvent])
     return <></>;
 }
