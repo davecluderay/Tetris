@@ -8,7 +8,7 @@ export class ScoreKeeper {
     }
 
     recordTetrominoLocked() {
-        const bonus = Math.max(0, 20 - this.ticksSinceLastTetrominoLocked) / 4;
+        const bonus = Math.floor(Math.max(0, 20 - this.ticksSinceLastTetrominoLocked) / 4);
         this.score += (this.ticksSinceLastTetrominoLocked * bonus);
         this.ticksSinceLastTetrominoLocked = 0;
     }
