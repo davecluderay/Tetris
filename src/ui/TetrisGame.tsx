@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import { BrickColour } from '../game/SharedTypes';
 import { RowOfBricks } from '../game/PlayArea';
 import { GameOver } from './GameOver';
+import { CameraView } from './CameraView';
 
 type DestroyedBrick = {
     id: number,
@@ -81,9 +82,10 @@ function TetrisGame() {
     const gameOver = game.isOver ? <GameOver position={[5, 10, 2.01]} /> : undefined;
 
     return (
-        <Canvas className="TetrisGame" orthographic camera={{ zoom: 35, position: [0, 15, 30], far: 100, near: 20 }} onCreated={state => state.camera.lookAt(5, 10, 0)}>
+        <Canvas className="TetrisGame">
             <ambientLight intensity={0.5} />
             <pointLight position={[0, -10, 10]} intensity={0.75} />
+            <CameraView />
             <PlayArea position={[0, 0, 0]} width={10} height={20} rotation={gameCount}>
                 {bricks}
                 <Tetromino key={tetrominoCount} colour={active.colour} layout={active.baseLayout} position={[...active.position, 0.001]} rotationZ={-active.rotation} />
