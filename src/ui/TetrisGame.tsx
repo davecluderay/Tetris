@@ -2,17 +2,26 @@ import './TetrisGame.css';
 import { Canvas } from "@react-three/fiber";
 import { PlayArea } from './PlayArea';
 import { Brick } from './Brick';
-import { useMemo, useReducer } from 'react';
+import { useMemo, useReducer, useState } from 'react';
 import { TetrisGame as Game } from '../game/TetrisGame'
 import { Tetromino } from './Tetromino';
 import { PreviewArea } from './PreviewArea';
 import { ScoreArea } from './ScoreArea';
 import { Controls } from './Controls';
 import { useEffect } from 'react';
+import { BrickColour } from '../game/SharedTypes';
 
 type TetrisGameProps = {
     showAxes?: boolean
-}
+};
+
+type DestroyedBrick = {
+    id: number,
+    colour: BrickColour,
+    position: [x: number, y: number, z: number],
+    rotation: [x: number, y: number, z: number],
+    scale: number
+};
 
 function calculateTickInterval(tetrominoCount: number) {
     const [min, max] = [200, 800];
@@ -23,7 +32,8 @@ function calculateTickInterval(tetrominoCount: number) {
 function TetrisGame(props: TetrisGameProps) {
     const game = useMemo(() => new Game(), []);
     const [tetrominoCount, IncrementTetrominoCount] = useReducer(n => n + 1, 0);
-    const tickInterval = useMemo(() => calculateTickInterval(tetrominoCount), [tetrominoCount])
+    const tickInterval = useMemo(() => calculateTickInterval(tetrominoCount), [tetrominoCount]);
+    const [destroyedBricks, setDestroyedBricks] = useState<DestroyedBrick[]>([]);
     const { active } = game;
 
     const [, reRender] = useReducer(n => n + 1, 0);
@@ -36,7 +46,16 @@ function TetrisGame(props: TetrisGameProps) {
                     onBricksLocked: () => {
                         IncrementTetrominoCount();
                     },
-                    onRowsDestroyed: () => {
+                    onRowsDestroyed: (destroyed) => {
+                        const bricks = destroyed.reduce<Array<DestroyedBrick>>((a, d) => {
+                            return [...a, ...d.bricks.map(b => {
+                                const [x, y] = b.position;
+                                const [px, py, pz] = [(x + Math.random() * 10) - 5, ((y + Math.random() * 10) - 5), 1];
+                                const [rx, ry, rz] = [Math.random() * 6 * Math.PI, Math.random() * 6 * Math.PI, Math.random() * 6 * Math.PI];
+                                return { id: b.id, colour: b.colour, position: [px, py, pz], rotation: [rx, ry, rz], scale: 0 } as DestroyedBrick;
+                            })];
+                        }, []);
+                        setDestroyedBricks(bricks);
                     },
                     onGameOver: () => {
                     }
@@ -56,9 +75,11 @@ function TetrisGame(props: TetrisGameProps) {
     }, [game, tickInterval]);
 
     const bricks = useMemo(() => {
-        const source = [...game.playArea.getBricks()];
-        return source.map(brick => <Brick key={brick.id} position={[...brick.position, 0]} colour={brick.colour} />);
-    }, [game.playArea, tetrominoCount]);
+        if (!tetrominoCount) return [];
+        const intact = [...game.playArea.getBricks()].map(brick => <Brick key={brick.id} position={[...brick.position, 0]} colour={brick.colour} />);
+        const destroyed = destroyedBricks.map(brick => <Brick key={brick.id} {...brick} />);
+        return [...intact, ...destroyed];
+    }, [game.playArea, destroyedBricks, tetrominoCount]);
 
     return (
         <Canvas className="TetrisGame" orthographic camera={{ zoom: 35, position: [0, 15, 30], far: 100, near: 20 }} onCreated={state => state.camera.lookAt(5, 10, 0)}>

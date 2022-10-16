@@ -1,15 +1,11 @@
 import { Tetromino, TetrominoProducer, produceRandomTetromino } from "./tetrominoes";
-import { DroppedRow, PlayArea } from "./PlayArea";
+import { DroppedRow, PlayArea, RowOfBricks } from "./PlayArea";
 import { Position } from "./SharedTypes";
 import { ScoreKeeper } from "./ScoreKeeper";
 
-// Outstanding tasks:
-// * UI.
-// * Audio.
-
 export type TickCallbacks = {
     onBricksLocked: (locked: Position[]) => void,
-    onRowsDestroyed: (destroyed: number[], dropped: DroppedRow[]) => void,
+    onRowsDestroyed: (destroyedRows: RowOfBricks[], dropped: DroppedRow[]) => void,
     onGameOver: () => void
 };
 
@@ -48,7 +44,7 @@ export class TetrisGame {
             const [min, max] = this.getExtentsY(locked);
             const completed = this.playArea.findCompletedRows(min, max);
             if (completed.length > 0) {
-                const dropped = this.playArea.removeRows(completed);
+                const dropped = this.playArea.removeRows(completed.map(r => r.y));
                 this.scoreKeeper.recordRowsDestroyed(completed.length);
                 callbacks.onRowsDestroyed(completed, dropped);
             }

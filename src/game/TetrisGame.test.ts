@@ -1,7 +1,7 @@
 import { TetrisGame } from "./TetrisGame";
 import { BlueTetromino, CyanTetromino, GreenTetromino, MagentaTetromino, OrangeTetromino, RedTetromino, Tetromino, TetrominoProducer, YellowTetromino } from "./tetrominoes";
 import { BrickColour, Position } from "./SharedTypes";
-import { DroppedRow, PlayArea } from "./PlayArea";
+import { DroppedRow, PlayArea, RowOfBricks } from "./PlayArea";
 
 const areaWidth = PlayArea.width;
 const areaVisibleHeight = PlayArea.visibleHeight;
@@ -12,14 +12,14 @@ type RotationOperation = "rotateLeft" | "rotateRight";
 
 let tickCallbacks: {
     onBricksLocked: jest.Mock<void,[locked: Position[]]>,
-    onRowsDestroyed: jest.Mock<void, [destroyed: number[], dropped: DroppedRow[]]>,
+    onRowsDestroyed: jest.Mock<void, [destroyed: RowOfBricks[], dropped: DroppedRow[]]>,
     onGameOver: jest.Mock<void, []>
 };
 
 beforeEach(() => {
     tickCallbacks = {
         onBricksLocked: jest.fn((locked: Position[]) => {}),
-        onRowsDestroyed: jest.fn((destroyed: number[], dropped: DroppedRow[]) => {}),
+        onRowsDestroyed: jest.fn((destroyed: RowOfBricks[], dropped: DroppedRow[]) => {}),
         onGameOver: jest.fn(() => {})
     };
 })
@@ -215,7 +215,7 @@ test.each([
     ]);
     game.tick(tickCallbacks);
     expect(tickCallbacks.onRowsDestroyed.mock.calls).toHaveLength(1);
-    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[0]).toEqual(expectedDestroyed);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[0].map(d => d.y)).toEqual(expectedDestroyed);
     expect(tickCallbacks.onRowsDestroyed.mock.lastCall[1]).toEqual(expectedDropped);
 });
 
@@ -233,9 +233,8 @@ test('rows drop correctly when destroyed rows are separated', () => {
     ]);
     game.tick(tickCallbacks);
     expect(tickCallbacks.onRowsDestroyed.mock.calls).toHaveLength(1);
-    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[0]).toEqual([2, 4]);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[0].map(d => d.y)).toEqual([2, 4]);
     expect(tickCallbacks.onRowsDestroyed.mock.lastCall[1]).toEqual(expectedDropped);
-
 })
 
 test('game over', () => {
