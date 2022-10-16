@@ -14,6 +14,7 @@ import { BrickColour } from '../game/SharedTypes';
 import { RowOfBricks } from '../game/PlayArea';
 import { GameOver } from './GameOver';
 import { CameraView } from './CameraView';
+import { ControlsHelp } from './ControlsHelp';
 
 type DestroyedBrick = {
     id: number,
@@ -92,6 +93,7 @@ function TetrisGame() {
             </PlayArea>
             <PreviewArea position={[11, 15, 0]} current={game.next} />
             <ScoreArea position={[16, 14.5, 1]} score={game.score} />
+            <ControlsHelp position={[-1, 5.5, 1]} />
             {gameOver}
             <Controls
                 onLeft={() => {
