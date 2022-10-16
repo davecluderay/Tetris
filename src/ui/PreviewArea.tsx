@@ -4,7 +4,7 @@ import { Brick } from "./Brick";
 
 type PreviewAreaProps = {
     position: [x: number, y: number, z: number],
-    current?: Tetromino
+    current: Tetromino | null
 };
 
 let id = 0;

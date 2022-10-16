@@ -12,7 +12,7 @@ export type TickCallbacks = {
 export class TetrisGame {
     private produceTetromino: TetrominoProducer;
     private scoreKeeper: ScoreKeeper; 
-    next: Tetromino;
+    next: Tetromino | null;
     active: Tetromino;
     playArea: PlayArea;
     isOver: boolean;
@@ -28,6 +28,15 @@ export class TetrisGame {
     }
 
     get score() { return this.scoreKeeper.score; }
+
+    public start() {
+        this.playArea.reset();
+        this.scoreKeeper.reset();
+        this.isOver = false;
+        this.next = this.produceTetromino();
+        this.active = this.produceTetromino();
+        this.setInitialPosition(this.active);
+    }
 
     public tick(callbacks: TickCallbacks) {
         if (this.isOver) {
@@ -49,6 +58,7 @@ export class TetrisGame {
                 callbacks.onRowsDestroyed(completed, dropped);
             }
             if (!this.canPlace(this.active, this.active.position)) {
+                this.next = null;
                 this.isOver = true;
                 callbacks.onGameOver();
             }
@@ -123,7 +133,7 @@ export class TetrisGame {
                 locked.push([x, y]);
             }
         }
-        this.active = this.next;
+        this.active = this.next ?? this.produceTetromino();
         this.setInitialPosition(this.active);
         this.next = this.produceTetromino();
         return locked;

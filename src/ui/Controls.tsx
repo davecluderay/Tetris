@@ -6,10 +6,11 @@ type ControlsProps = {
     onRight: () => void,
     onDown: () => void,
     onRotateLeft: () => void,
-    onRotateRight: () => void
+    onRotateRight: () => void,
+    onStart: () => void
 }
 
-export function Controls({ target, onLeft, onRight, onDown, onRotateLeft, onRotateRight }: ControlsProps) {
+export function Controls({ target, onLeft, onRight, onDown, onRotateLeft, onRotateRight, onStart }: ControlsProps) {
     const handleKeyboardEvent = useCallback((e: KeyboardEvent) => {
         switch (e.code) {
             case 'ArrowLeft':
@@ -27,8 +28,11 @@ export function Controls({ target, onLeft, onRight, onDown, onRotateLeft, onRota
             case 'KeyX':
                 onRotateRight();
                 break;
+            case 'KeyS':
+                onStart();
+                break;
         }
-    }, [onLeft, onRight, onDown, onRotateLeft, onRotateRight]);
+    }, [onLeft, onRight, onDown, onRotateLeft, onRotateRight, onStart]);
 
     useEffect(() => {
         const t = target ?? window;

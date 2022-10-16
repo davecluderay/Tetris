@@ -1,17 +1,20 @@
+import { animated, useSpring } from "@react-spring/three";
 import { PropsWithChildren } from "react"
 
 type PlayAreaProps = PropsWithChildren<{
     position: [x: number, y: number, z: number],
     width: number,
-    height: number
+    height: number,
+    rotation: number
 }>;
 
 function PlayArea(props: PlayAreaProps) {
     const material = <meshStandardMaterial color="#39241c" />
     const centrePosition = adjustPosition(props.position, [props.width, props.height, 1]);
-
+    const rotationY = props.rotation * Math.PI * 2;
+    const spring = useSpring({ rotationY: rotationY });
     return (
-        <group position={centrePosition}>
+        <animated.group position={centrePosition} rotation-y={spring.rotationY}>
             <mesh>
                 <boxGeometry args={[props.width, props.height, 1]} />
                 {material}
@@ -23,7 +26,7 @@ function PlayArea(props: PlayAreaProps) {
             <group position={[props.width * -0.5, props.height * -0.5, 0.5]}>
                 {props.children}
             </group>
-        </group>
+        </animated.group>
     )
 }
 

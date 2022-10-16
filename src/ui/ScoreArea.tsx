@@ -15,4 +15,3 @@ function ScoreArea(props: ScoreAreaProps) {
 }
 
 export { ScoreArea };
-

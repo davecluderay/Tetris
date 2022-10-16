@@ -32,6 +32,10 @@ export class PlayArea {
                                  () => Array(this.width).fill(null));
     }
 
+    reset() {
+        this.layout.forEach(row => row.fill(null));
+    }
+
     contains([x, y]: Position) {
         return this.isInBounds(x, y);
     }

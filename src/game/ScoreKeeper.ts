@@ -3,6 +3,10 @@ export class ScoreKeeper {
     private ticksSinceLastTetrominoLocked = 0;
     score = 0;
 
+    reset() {
+        this.score = this.lastRowsDestroyed = this.ticksSinceLastTetrominoLocked = 0;
+    }
+
     recordTick() {
         this.ticksSinceLastTetrominoLocked++;
     }
