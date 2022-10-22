@@ -37,6 +37,11 @@ export function useTouchControls(onLeft: ActionCallback, onRight: ActionCallback
         }
     },
     {
+        swipe: {
+            duration: 400,
+            velocity: [0.2, 0.2],
+            distance: [15, 15]
+        },
         preventDefault: true
     });
 }
