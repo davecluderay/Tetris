@@ -1,4 +1,5 @@
 .TetrisGame {
+    touch-action: none;
     background: 
       linear-gradient(45deg,  transparent 0%, transparent 37%, #2f1942 100%),
       linear-gradient(-45deg, #8f5046 0%,  #4d1e16 -20%, #4C2556 112%,  transparent 11% );

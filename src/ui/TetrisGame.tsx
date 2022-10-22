@@ -8,7 +8,7 @@ import { Brick as CoreBrick } from '../game/PlayArea';
 import { Tetromino } from './Tetromino';
 import { PreviewArea } from './PreviewArea';
 import { ScoreArea } from './ScoreArea';
-import { Controls } from './Controls';
+import { Controls, useTouchControls } from './Controls';
 import { useEffect } from 'react';
 import { BrickColour } from '../game/SharedTypes';
 import { RowOfBricks } from '../game/PlayArea';
@@ -82,8 +82,23 @@ function TetrisGame() {
 
     const gameOver = game.isOver ? <GameOver position={[5, 10, 2.01]} /> : undefined;
 
+    const onLeft = useCallback(() => { game.left(); reRender(); }, [game, reRender]);
+    const onRight = useCallback(() => { game.right(); reRender(); }, [game, reRender]);
+    const onDown = useCallback(() => { game.down(); reRender(); }, [game, reRender]);
+    const onRotateLeft = useCallback(() => { game.rotateLeft(); reRender(); }, [game, reRender]);
+    const onRotateRight = useCallback(() => { game.rotateRight(); reRender(); }, [game, reRender]);
+    const onStart = useCallback(() => {
+        if (game.isOver) {
+            onBricksDestroyed([...game.playArea.getBricks()]);
+            incrementGameCount();
+            game.start();
+            reRender();
+        }
+    }, [game, onBricksDestroyed, incrementGameCount, reRender]);
+
+    const bind = useTouchControls(onLeft, onRight, onDown, onRotateLeft, onRotateRight, onStart);
     return (
-        <Canvas className="TetrisGame">
+        <Canvas className="TetrisGame" {...bind()}>
             <ambientLight intensity={0.5} />
             <pointLight position={[0, -10, 10]} intensity={0.75} />
             <CameraView />
@@ -95,35 +110,7 @@ function TetrisGame() {
             <ScoreArea position={[16, 14.5, 1]} score={game.score} />
             <ControlsHelp position={[-1, 5.5, 1]} />
             {gameOver}
-            <Controls
-                onLeft={() => {
-                    game.left();
-                    reRender();
-                }}
-                onRight={() => {
-                    game.right();
-                    reRender();
-                }}
-                onDown={() => {
-                    game.down();
-                    reRender();
-                }}
-                onRotateLeft={() => {
-                    game.rotateLeft();
-                    reRender();
-                }}
-                onRotateRight={() => {
-                    game.rotateRight();
-                    reRender();
-                }}
-                onStart={() => {
-                    if (game.isOver) {
-                        onBricksDestroyed([...game.playArea.getBricks()]);
-                        incrementGameCount();
-                        game.start();
-                        reRender();
-                    }
-                }} />
+            <Controls onLeft={onLeft} onRight={onRight} onDown={onDown} onRotateLeft={onRotateLeft} onRotateRight={onRotateRight} onStart={onStart} />
         </Canvas>
     )
 }
