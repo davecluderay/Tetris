@@ -1,5 +1,4 @@
-import { useDrag } from "@use-gesture/react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type ActionCallback = () => void;
 
@@ -14,36 +13,44 @@ type ControlsProps = {
 }
 
 export function useTouchControls(onLeft: ActionCallback, onRight: ActionCallback, onDown: ActionCallback, onRotateLeft: ActionCallback, onRotateRight: ActionCallback, onStart: ActionCallback) {
-    return useDrag(e => {
-        const [x, y] = e.swipe;
-        if (Math.abs(x) > Math.abs(y)) {
-            if (x < 0)
-                onLeft();
-            else if (x > 0)
-                onRight();
+    const stateRef = useRef<{startTime: number, startX: number, startY: number}>();
+    const onTouchStart = useCallback((e: TouchEvent) => {
+        const touch = e.touches?.[0] ?? e.changedTouches[0];
+        stateRef.current = {
+            startTime: e.timeStamp,
+            startX: touch.clientX,
+            startY: touch.clientY
+        };
+    }, []);
+    const onTouchEnd = useCallback((e: TouchEvent) => {
+        const state = stateRef.current!;
+        const touch = e.touches?.[0] ?? e.changedTouches[0];
+        const [radiusX, radiusY] = [touch.radiusX, touch.radiusY];
+        const [deltaX, deltaY] = [touch.clientX - state.startX, touch.clientY - state.startY];
+        const time = e.timeStamp - state.startTime;
+        if (Math.abs(deltaX / deltaY) > 2) {
+            if (deltaX < -radiusX && time < 500) { onLeft(); }
+            if (deltaX > radiusX && time < 500) { onRight(); }
         }
-        if (Math.abs(y) > Math.abs(x)) {
-            if (y > 0)
-                onDown();
+        else if (Math.abs(deltaX / deltaY) < 0.5) {
+            if (deltaY > radiusY && time < 500) { onDown(); }
         }
-        if (e.tap) {
-            const [x,] = e.values;
-            const w = (e.currentTarget as HTMLBaseElement).clientWidth;
-            if (x < w / 2.2)
-                onRotateLeft();
-            else if (x > w / 1.8)
-                onRotateRight();
+        else if (time < 250) {
+            const width = (e.target as HTMLElement).clientWidth;
+            if (touch.clientX < width / 2) { onRotateLeft(); }
+            if (touch.clientX > width / 2) { onRotateRight(); }
             onStart();
         }
-    },
-    {
-        swipe: {
-            duration: 400,
-            velocity: [0.2, 0.2],
-            distance: [15, 15]
-        },
-        preventDefault: true
-    });
+        stateRef.current = undefined;
+    }, [onLeft, onRight, onDown, onRotateLeft, onRotateRight, onStart]);
+    useEffect(() => {
+        window.addEventListener('touchstart', onTouchStart);
+        window.addEventListener('touchend', onTouchEnd);
+        return () => {
+            window.removeEventListener('touchstart', onTouchStart);
+            window.removeEventListener('touchend', onTouchEnd);
+        };
+    }, [onTouchStart, onTouchEnd]);
 }
 
 export function Controls({ target, onLeft, onRight, onDown, onRotateLeft, onRotateRight, onStart }: ControlsProps) {

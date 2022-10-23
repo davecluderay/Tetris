@@ -96,10 +96,10 @@ function TetrisGame() {
         }
     }, [game, onBricksDestroyed, incrementGameCount, reRender]);
 
-    const bindTouchControls = useTouchControls(onLeft, onRight, onDown, onRotateLeft, onRotateRight, onStart);
+    useTouchControls(onLeft, onRight, onDown, onRotateLeft, onRotateRight, onStart);
 
     return (
-        <Canvas className="TetrisGame" {...bindTouchControls()}>
+        <Canvas className="TetrisGame">
             <ambientLight intensity={0.5} />
             <pointLight position={[0, -10, 10]} intensity={0.75} />
             <CameraView />
