@@ -25,22 +25,22 @@ type DestroyedBrick = {
 };
 
 function calculateTickInterval(tetrominoCount: number) {
-    const [min, max] = [200, 800];
-    const t = 1 - Math.min(tetrominoCount / 500, 1);
-    return min + (max - min) * t;
+    const [min, max] = [200, 700];
+    const t = 1 - Math.min(tetrominoCount / 200, 1);
+    return Math.trunc(min + (max - min) * t);
 }
 
 function TetrisGame() {
     const game = useMemo(() => new CoreGame(), []);
-    const [tetrominoCount, incrementTetrominoCount] = useReducer(n => n + 1, 0);
-    const [gameCount, incrementGameCount] = useReducer(n => n + 1, 0);
+    const [tetrominoCount, setTetrominoCount] = useState(0);
+    const [gameCount, incrementGameCount] = useReducer((n: number) => n + 2, 0);
     const tickInterval = useMemo(() => calculateTickInterval(tetrominoCount), [tetrominoCount]);
     const [destroyedBricks, setDestroyedBricks] = useState<DestroyedBrick[]>([]);
     const { active } = game;
 
-    const [, reRender] = useReducer(n => n + 1, 0);
+    const [, reRender] = useReducer((n: number) => n + 1, 0);
 
-    const onBricksLocked = useCallback(() => incrementTetrominoCount(), []);
+    const onBricksLocked = useCallback(() => setTetrominoCount(n => n + 1), []);
     const onBricksDestroyed = useCallback((bricks: CoreBrick[]) => {
         setDestroyedBricks(bricks.map(b => {
                 const [x, y] = b.position;
@@ -91,6 +91,7 @@ function TetrisGame() {
         if (game.isOver) {
             onBricksDestroyed([...game.playArea.getBricks()]);
             incrementGameCount();
+            setTetrominoCount(0);
             game.start();
             reRender();
         }
