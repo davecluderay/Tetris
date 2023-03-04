@@ -7,5 +7,5 @@ export function CameraView() {
     });
     const size = useThree(state => state.size);
     const zoom = Math.min(size.height, size.width) / 900 * 35;
-    return <OrthographicCamera makeDefault zoom={zoom} position={[0, 15, 30]} far={100} near={10} />;
+    return <OrthographicCamera makeDefault zoom={zoom} position={[5, 15, 30]} far={100} near={10} />;
 }
