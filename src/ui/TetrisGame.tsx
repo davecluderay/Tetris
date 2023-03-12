@@ -16,6 +16,7 @@ import { GameOver } from './GameOver';
 import { CameraView } from './CameraView';
 import { ControlsHelp } from './ControlsHelp';
 import { musicControlPromise } from '../audio/TetrisMusic/TetrisMusic';
+import { sfxControlPromise } from '../audio/Sfx';
 
 type DestroyedBrick = {
     id: number,
@@ -48,8 +49,12 @@ function TetrisGame() {
 
     const [, reRender] = useReducer((n: number) => n + 1, 0);
 
-    const onBricksLocked = useCallback(() => setTetrominoCount(n => n + 1), []);
+    const onBricksLocked = useCallback(() => {
+        sfxControlPromise.then(sfx => sfx.playImpactSound());
+        setTetrominoCount(n => n + 1);
+     }, []);
     const onBricksDestroyed = useCallback((bricks: CoreBrick[]) => {
+        sfxControlPromise.then(sfx => sfx.playExplosionSound());
         setDestroyedBricks(bricks.map(b => {
                 const [x, y] = b.position;
                 const [px, py, pz] = [(x + Math.random() * 10) - 5, ((y + Math.random() * 10) - 5), 1];
