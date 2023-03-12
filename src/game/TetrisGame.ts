@@ -25,6 +25,7 @@ export class TetrisGame {
         this.next = null;
         this.active = this.produceTetromino();
         this.setInitialPosition(this.active);
+        this.addRandomBricks();
     }
 
     get score() { return this.scoreKeeper.score; }
@@ -83,6 +84,22 @@ export class TetrisGame {
 
     public rotateRight() {
         this.rotateActiveTetromino(1);
+    }
+
+    public addRandomBricks() {
+        const maxHeight = Math.floor(PlayArea.visibleHeight * 0.6);
+        const minHeight = Math.floor(PlayArea.visibleHeight * 0.2);
+        for (var y = 0; y < maxHeight; y++)
+        {
+            const density = Math.min(1, 1 - (y - minHeight) / (maxHeight - minHeight));
+            for (var x = 0; x < PlayArea.width; x++) {
+                if (Math.random() <= density) {
+                    if (y == 0 || this.playArea.hasBrickAt([x, y - 1])) {
+                        this.playArea.setBrickAt([x, y], produceRandomTetromino().colour);
+                    }
+                }
+            }
+        }
     }
 
     private setInitialPosition(tetromino: Tetromino) {

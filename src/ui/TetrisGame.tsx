@@ -74,7 +74,6 @@ function TetrisGame() {
     }, [game, tickInterval, onBricksLocked, onRowsDestroyed, onGameOver, gameCount]);
 
     const bricks = useMemo(() => {
-        if (!tetrominoCount) return [];
         const intact = [...game.playArea.getBricks()].map(brick => <Brick key={brick.id} position={[...brick.position, 0]} colour={brick.colour} />);
         const destroyed = destroyedBricks.map(brick => <Brick key={brick.id} {...brick} />);
         return [...intact, ...destroyed];
