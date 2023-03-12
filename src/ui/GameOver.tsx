@@ -32,4 +32,3 @@ function GameOver(props: GameOverProps) {
 }
 
 export { GameOver };
-

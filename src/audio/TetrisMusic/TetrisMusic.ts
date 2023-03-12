@@ -46,6 +46,15 @@ tonePromise.then((Tone) => {
     stop: () => {
       Tone.getDestination().volume.value = 0;
       Tone.Transport.stop();
+
+      // Stop chaotically.
+      const notes = ["A#3", "C#4", "D#4", "F#4", "G4", "A#4", "C#5", "D#5", "F#5", "G5"];
+      for (var n = 0; n < 12; n++) {
+        const duration = Math.random() * 1;
+        const note = notes[(Math.random() * notes.length) | 0];
+        const delay = Math.random() * 0.5;
+        mainSynth.triggerAttackRelease(note, duration, `+${delay}`);
+      }
     },
     start: bpm => {
       Tone.Transport.bpm.value = bpm;
