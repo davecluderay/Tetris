@@ -15,6 +15,7 @@ import { RowOfBricks } from '../game/PlayArea';
 import { GameOver } from './GameOver';
 import { CameraView } from './CameraView';
 import { ControlsHelp } from './ControlsHelp';
+import { musicControlPromise } from '../audio/TetrisMusic/TetrisMusic';
 
 type DestroyedBrick = {
     id: number,
@@ -30,11 +31,18 @@ function calculateTickInterval(tetrominoCount: number) {
     return Math.trunc(min + (max - min) * t);
 }
 
+function calculateBpm(tetrominoCount: number) {
+    const [min, max] = [140, 200];
+    const t = Math.min(tetrominoCount / 200, 1);
+    return Math.trunc(min + (max - min) * t);
+}
+
 function TetrisGame() {
     const game = useMemo(() => new CoreGame(), []);
     const [tetrominoCount, setTetrominoCount] = useState(0);
     const [gameCount, incrementGameCount] = useReducer((n: number) => n + 1, 0);
     const tickInterval = useMemo(() => calculateTickInterval(tetrominoCount), [tetrominoCount]);
+    const musicBpm = useMemo(() => calculateBpm(tetrominoCount), [tetrominoCount]);
     const [destroyedBricks, setDestroyedBricks] = useState<DestroyedBrick[]>([]);
     const { active } = game;
 
@@ -52,7 +60,9 @@ function TetrisGame() {
     const onRowsDestroyed = useCallback((destroyed: RowOfBricks[]) => {
         onBricksDestroyed(destroyed.reduce<Array<CoreBrick>>((a, d) => [...a, ...d.bricks], []));
     }, [onBricksDestroyed]);
-    const onGameOver = useCallback(() => {}, []);
+    const onGameOver = useCallback(() => {
+        musicControlPromise.then(m => m.stop());
+    }, []);
 
     useEffect(() => {
         let timeout: NodeJS.Timeout | undefined = undefined;
@@ -73,7 +83,12 @@ function TetrisGame() {
         }
     }, [game, tickInterval, onBricksLocked, onRowsDestroyed, onGameOver, gameCount]);
 
+    useEffect(() => {
+        musicControlPromise.then(m => m.setBpm(musicBpm));
+    }, [musicBpm]);
+
     const bricks = useMemo(() => {
+        if (tetrominoCount < 0) return [];
         const intact = [...game.playArea.getBricks()].map(brick => <Brick key={brick.id} position={[...brick.position, 0]} colour={brick.colour} />);
         const destroyed = destroyedBricks.map(brick => <Brick key={brick.id} {...brick} />);
         return [...intact, ...destroyed];
@@ -94,8 +109,9 @@ function TetrisGame() {
             setTetrominoCount(0);
             game.start();
             reRender();
+            musicControlPromise.then(m => m.start(musicBpm));
         }
-    }, [game, onBricksDestroyed, incrementGameCount, reRender]);
+    }, [game, onBricksDestroyed, incrementGameCount, reRender, musicBpm]);
 
     useTouchControls(onLeft, onRight, onDown, onRotateLeft, onRotateRight, onStart);
 

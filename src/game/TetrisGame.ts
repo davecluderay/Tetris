@@ -94,7 +94,7 @@ export class TetrisGame {
             const density = Math.min(1, 1 - (y - minHeight) / (maxHeight - minHeight));
             for (var x = 0; x < PlayArea.width; x++) {
                 if (Math.random() <= density) {
-                    if (y == 0 || this.playArea.hasBrickAt([x, y - 1])) {
+                    if (y === 0 || this.playArea.hasBrickAt([x, y - 1])) {
                         this.playArea.setBrickAt([x, y], produceRandomTetromino().colour);
                     }
                 }
