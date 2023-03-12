@@ -21,8 +21,8 @@ export class TetrisGame {
         this.produceTetromino = produceTetromino ?? produceRandomTetromino;
         this.scoreKeeper = new ScoreKeeper();
         this.playArea = new PlayArea();
-        this.isOver = false;
-        this.next = this.produceTetromino();
+        this.isOver = true;
+        this.next = null;
         this.active = this.produceTetromino();
         this.setInitialPosition(this.active);
     }
@@ -90,6 +90,7 @@ export class TetrisGame {
     }
 
     private moveActiveTetromino(dx: number, dy: number) : boolean {
+        if (this.isOver) return false;
         const [x, y] = this.active.position;
         const to: Position = [x + dx, y + dy];
         if (this.canPlace(this.active, [x + dx, y + dy])) {
@@ -100,6 +101,7 @@ export class TetrisGame {
     }
 
     private rotateActiveTetromino(dr: number) {
+        if (this.isOver) return;
         const active = this.active;
         const forward = dr < 0 ? () => active.rotateLeft() : () => active.rotateRight();
         const reverse = dr < 0 ? () => active.rotateRight() : () => active.rotateLeft();

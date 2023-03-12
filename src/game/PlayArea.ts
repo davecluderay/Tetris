@@ -54,7 +54,7 @@ export class PlayArea {
     }
 
     *getBricks(fromY?: number, toY?: number): Generator<Brick> {
-        const maxY = toY === undefined ? this.visibleHeight - 1 : toY;
+        const maxY = toY === undefined ? this.visibleHeight + 2 : toY;
         const minY = fromY === undefined ? 0 : fromY;
         for (var y = maxY; y >= minY; y--) {
             for (var x = 0; x < this.width; x++) {

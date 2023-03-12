@@ -22,28 +22,35 @@ beforeEach(() => {
         onRowsDestroyed: jest.fn((destroyed: RowOfBricks[], dropped: DroppedRow[]) => {}),
         onGameOver: jest.fn(() => {})
     };
-})
+});
 
 test('can create game', () => {
     const game = new TetrisGame();
     expect(game).toBeInstanceOf(TetrisGame);
 });
 
-test('new game has active block', () => {
+test('newly created game is not active', () => {
     const game = new TetrisGame();
-    expect(game.next).toBeInstanceOf(Tetromino);
+    expect(game.isOver).toBe(true);
 });
 
-test('new game has next block', () => {
-    const game = new TetrisGame();
-    expect(game.next).toBeInstanceOf(Tetromino);
-});
-
-test('new game has play area defined', () => {
+test('newly created game has play area defined', () => {
     const game = new TetrisGame();
     expect(game.playArea).toBeDefined();
     expect(game.playArea.visibleHeight).toBe(areaVisibleHeight);
     expect(game.playArea.width).toBe(areaWidth);
+});
+
+test('started game has active block', () => {
+    const game = new TetrisGame();
+    game.start();
+    expect(game.active).toBeInstanceOf(Tetromino);
+});
+
+test('started game has next block', () => {
+    const game = new TetrisGame();
+    game.start();
+    expect(game.next).toBeInstanceOf(Tetromino);
 });
 
 type InitialPositionTestCase = { producer: TetrominoProducer, expectedPosition: Position };
@@ -57,11 +64,13 @@ test.each([
     { producer: () => new YellowTetromino(), expectedPosition: [areaWidth / 2 - 1, areaVisibleHeight + 1] }
 ] as InitialPositionTestCase[])('initial tetromino position is central', ({ producer, expectedPosition }: InitialPositionTestCase) => {
     const game = new TetrisGame(producer);
+    game.start();
     expect(game.active.position).toEqual(expectedPosition);
 });
 
 test('active tetromino descends when not obstructed', () => {
     const game = new TetrisGame();
+    game.start();
     let [x, y] = game.active.position;
     game.tick(tickCallbacks);
     expect(game.active.position).toEqual([x, y - 1]);
@@ -69,6 +78,7 @@ test('active tetromino descends when not obstructed', () => {
 
 test('active tetromino becomes locked at base of play area', () => {
     const game = new TetrisGame(() => new CyanTetromino());
+    game.start();
     let tetromino = game.active;
     let [x, _] = tetromino.position;
     tetromino.position = [x, 1];
@@ -86,6 +96,7 @@ test.each([
     { producer: () => new RedTetromino(), tetrominoAt: [2, areaMidHeight], obstructedAt: [4, areaMidHeight - 2] },
 ] as ObstructedFromBelowTestCase[])('active tetromino becomes locked when obstructed from below', ({ producer, tetrominoAt, obstructedAt }) => {
     const game = new TetrisGame(producer);
+    game.start();
     const tetromino = game.active;
     tetromino.position = tetrominoAt;
     game.playArea.setBrickAt(obstructedAt, BrickColour.Blue);
@@ -100,6 +111,7 @@ test.each([
     { producer: () => new OrangeTetromino(), tetrominoAt: [2, areaMidHeight], operation: "down", expectedPosition: [2, areaMidHeight - 1] }
 ] as UnobstructedMovementTestCase[])('active tetromino can move when not obstructed', ({ producer, tetrominoAt, operation, expectedPosition }) => {
     const game = new TetrisGame(producer);
+    game.start();
     game.active.position = tetrominoAt;
     game[operation]();
     expect(game.active.position).toEqual(expectedPosition);
@@ -115,6 +127,7 @@ test.each([
     { producer: () => new GreenTetromino(), tetrominoAt: [2, 1], obstructedAt: undefined, operation: "down" }
 ] as ObstructedMovementTestCase[])('active tetromino can not move when obstructed', ({ producer, tetrominoAt, obstructedAt, operation }) => {
     const game = new TetrisGame(producer);
+    game.start();
     const tetromino = game.active;
     tetromino.position = tetrominoAt;
     if (obstructedAt) {
@@ -137,6 +150,7 @@ test.each([
     { tetrominoAt: [2, areaMidHeight], operation: "rotateRight", times: 4, expectedRotation: 4 }
 ] as UnobstructedRotationTestCase[])('active tetromino can rotate when not obstructed', ({ tetrominoAt, operation, times, expectedRotation }) => {
     const game = new TetrisGame();
+    game.start();
     game.active.position = tetrominoAt;
     for (let n = 0; n < times; n++) {
         game[operation]();
@@ -154,6 +168,7 @@ test.each([
     { producer: () => new GreenTetromino(), tetrominoAt: [0, areaMidHeight], startRotation: 0, operation: "rotateRight", obstructedAt: [[1, areaMidHeight]], expectedPosition: [1, areaMidHeight] }
 ] as LateralKickTestCase[])('active tetromino can rotate with lateral kicks from obstacles', ({ producer, tetrominoAt, startRotation, operation, obstructedAt, expectedPosition }) => {
     const game = new TetrisGame(producer);
+    game.start();
     game.active.position = tetrominoAt;
     for (let n = 0; n < startRotation; n++) {
         game.active.rotateRight();
@@ -174,6 +189,7 @@ test.each([
     { producer: () => new RedTetromino(), tetrominoAt: [2, areaMidHeight], startRotation: 1, operation: "rotateLeft", obstructedAt: [[1, areaMidHeight], [3, areaMidHeight], [6, areaMidHeight - 1]] }
 ] as BlockedRotationTestCase[])('active tetromino can not rotate when completely obstructed', ({ producer, tetrominoAt, startRotation, obstructedAt, operation }) => {
     const game = new TetrisGame(producer);
+    game.start();
     game.active.position = tetrominoAt;
     for (let n = 0; n < startRotation; n++) {
         game.active.rotateRight();
@@ -202,6 +218,7 @@ test.each([
     }
 ] as RowsDestroyedTestCase[])('completed rows are destroyed', ({ provider, startRotation, startPosition, expectedDestroyed, expectedDropped }) => {
     const game = new TetrisGame(provider);
+    game.start();
     for (let n = 0; n < startRotation; n++) {
         game.active.rotateRight();
     }
@@ -221,6 +238,7 @@ test.each([
 
 test('rows drop correctly when destroyed rows are separated', () => {
     const game = new TetrisGame(() => new CyanTetromino());
+    game.start();
     const expectedDropped: DroppedRow[] = [{ row: 3, distance: 1 }, ...range(5, game.playArea.visibleHeight + 1).map(n => ({ row: n, distance: 2 }))];
     game.active.rotateRight();
     game.active.position = [2, 4];
@@ -239,6 +257,7 @@ test('rows drop correctly when destroyed rows are separated', () => {
 
 test('game over', () => {
     const game = new TetrisGame(() => new YellowTetromino());
+    game.start();
     game.playArea.setBrickAt([4, game.playArea.visibleHeight - 1], BrickColour.Red);
     game.tick(tickCallbacks);
     expect(tickCallbacks.onGameOver.mock.calls).toHaveLength(1);

@@ -33,7 +33,7 @@ function calculateTickInterval(tetrominoCount: number) {
 function TetrisGame() {
     const game = useMemo(() => new CoreGame(), []);
     const [tetrominoCount, setTetrominoCount] = useState(0);
-    const [gameCount, incrementGameCount] = useReducer((n: number) => n + 2, 0);
+    const [gameCount, incrementGameCount] = useReducer((n: number) => n + 1, 0);
     const tickInterval = useMemo(() => calculateTickInterval(tetrominoCount), [tetrominoCount]);
     const [destroyedBricks, setDestroyedBricks] = useState<DestroyedBrick[]>([]);
     const { active } = game;
@@ -80,7 +80,8 @@ function TetrisGame() {
         return [...intact, ...destroyed];
     }, [game.playArea, destroyedBricks, tetrominoCount]);
 
-    const gameOver = game.isOver ? <GameOver position={[5, 10, 2.01]} /> : undefined;
+    const gameOver = game.isOver ? <GameOver beforeFirstGame={!gameCount} position={[5, 10, 2.01]} /> : undefined;
+    const activeTetromino = game.isOver ? undefined : <Tetromino key={tetrominoCount} colour={active.colour} layout={active.baseLayout} position={[...active.position, 0.001]} rotationZ={-active.rotation} />;
 
     const onLeft = useCallback(() => { game.left(); reRender(); }, [game, reRender]);
     const onRight = useCallback(() => { game.right(); reRender(); }, [game, reRender]);
@@ -106,7 +107,7 @@ function TetrisGame() {
             <CameraView />
             <PlayArea position={[0, 0, 0]} width={10} height={20} rotation={gameCount}>
                 {bricks}
-                <Tetromino key={tetrominoCount} colour={active.colour} layout={active.baseLayout} position={[...active.position, 0.001]} rotationZ={-active.rotation} />
+                {activeTetromino}
             </PlayArea>
             <PreviewArea position={[11, 15, 0]} current={game.next} />
             <ScoreArea position={[16, 14.5, 1]} score={game.score} />
