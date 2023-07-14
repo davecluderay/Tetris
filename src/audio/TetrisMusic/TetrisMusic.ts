@@ -52,7 +52,7 @@ tonePromise.then((Tone) => {
       for (var n = 0; n < 12; n++) {
         const duration = Math.random() * 1;
         const note = notes[(Math.random() * notes.length) | 0];
-        const delay = Math.random() * 0.5;
+        const delay = Math.random();
         mainSynth.triggerAttackRelease(note, duration, `+${delay}`);
       }
     },
