@@ -109,12 +109,14 @@ function TetrisGame() {
     const onRotateRight = useCallback(() => { game.rotateRight(); reRender(); }, [game, reRender]);
     const onStart = useCallback(() => {
         if (game.isOver) {
-            onBricksDestroyed([...game.playArea.getBricks()]);
-            incrementGameCount();
-            setTetrominoCount(0);
-            game.start();
-            reRender();
-            musicControlPromise.then(m => m.start(musicBpm));
+            musicControlPromise.then(m => {
+                m.start(musicBpm);
+                onBricksDestroyed([...game.playArea.getBricks()]);
+                incrementGameCount();
+                setTetrominoCount(0);
+                game.start();
+                reRender();
+            });
         }
     }, [game, onBricksDestroyed, incrementGameCount, reRender, musicBpm]);
 
