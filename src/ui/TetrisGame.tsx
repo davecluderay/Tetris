@@ -70,7 +70,7 @@ function TetrisGame() {
     }, []);
 
     useEffect(() => {
-        let timeout: NodeJS.Timeout | undefined = undefined;
+        let timeout: number | undefined = undefined;
         const tick = () => {
             if (timeout) {
                 game.tick({ onBricksLocked, onRowsDestroyed, onGameOver });
@@ -125,7 +125,8 @@ function TetrisGame() {
     return (
         <Canvas className="TetrisGame">
             <ambientLight intensity={0.5} />
-            <pointLight position={[0, -10, 10]} intensity={0.75} />
+            {/* <pointLight position={[0, -10, 10]} intensity={500} /> */}
+            <directionalLight position={[0, -10, 10]} intensity={2} />
             <CameraView />
             <PlayArea position={[0, 0, 0]} width={10} height={20} rotation={gameCount}>
                 {bricks}

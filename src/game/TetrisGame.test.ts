@@ -18,8 +18,8 @@ let tickCallbacks: {
 
 beforeEach(() => {
     tickCallbacks = {
-        onBricksLocked: jest.fn((locked: Position[]) => {}),
-        onRowsDestroyed: jest.fn((destroyed: RowOfBricks[], dropped: DroppedRow[]) => {}),
+        onBricksLocked: jest.fn((_locked: Position[]) => {}),
+        onRowsDestroyed: jest.fn((_destroyed: RowOfBricks[], _dropped: DroppedRow[]) => {}),
         onGameOver: jest.fn(() => {})
     };
 });
@@ -232,8 +232,8 @@ test.each([
     ]);
     game.tick(tickCallbacks);
     expect(tickCallbacks.onRowsDestroyed.mock.calls).toHaveLength(1);
-    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[0].map(d => d.y)).toEqual(expectedDestroyed);
-    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[1]).toEqual(expectedDropped);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall![0].map(d => d.y)).toEqual(expectedDestroyed);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall![1]).toEqual(expectedDropped);
 });
 
 test('rows drop correctly when destroyed rows are separated', () => {
@@ -251,8 +251,8 @@ test('rows drop correctly when destroyed rows are separated', () => {
     ]);
     game.tick(tickCallbacks);
     expect(tickCallbacks.onRowsDestroyed.mock.calls).toHaveLength(1);
-    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[0].map(d => d.y)).toEqual([2, 4]);
-    expect(tickCallbacks.onRowsDestroyed.mock.lastCall[1]).toEqual(expectedDropped);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall![0].map(d => d.y)).toEqual([2, 4]);
+    expect(tickCallbacks.onRowsDestroyed.mock.lastCall![1]).toEqual(expectedDropped);
 })
 
 test('game over', () => {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="64" height="64" preserveAspectRatio="xMidYMid meet" viewBox="0 0 64 64">
+  <polygon id="LargeCube" points="4.29 16 4.29 48 32 64 59.71 48 59.71 16 32 0 4.29 16" fill="#df9a23" stroke-width="0"/>
+  <polygon id="SmallCube" points="18.14 24 18.14 40 32 48 45.86 40 45.86 24 32 16 18.14 24" fill="#e63094" stroke-width="0"/>
+  <polygon id="TopShade" points="4.29 16 32 32 59.71 16 32 0 4.29 16" fill="#000" opacity=".25" stroke-width="0"/>
+  <polygon id="RightShade" points="32 32 32 64 59.71 48 59.71 16 32 32" fill="#000" opacity=".1" stroke-width="0"/>
+  <polygon id="LeftHighlight" points="32 32 32 64 4.29 48 4.29 16 32 32" fill="#fff" opacity=".2" stroke-width="0"/>
+</svg>
